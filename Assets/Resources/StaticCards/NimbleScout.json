@@ -1,0 +1,7 @@
+{
+  "CardId": "NimbleScout",
+  "BaseAttack": 2,
+  "BaseDefense": 1,
+  "BaseHealth": 1,
+  "EffectIDs": []
+}

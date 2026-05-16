@@ -1,0 +1,7 @@
+{
+  "CardId": "StoneGolem",
+  "BaseAttack": 1,
+  "BaseDefense": 5,
+  "BaseHealth": 5,
+  "EffectIDs": []
+}

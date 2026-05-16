@@ -1,0 +1,7 @@
+{
+  "CardId": "HeavyDefender",
+  "BaseAttack": 0,
+  "BaseDefense": 3,
+  "BaseHealth": 4,
+  "EffectIDs": []
+}

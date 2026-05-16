@@ -1,0 +1,7 @@
+{
+  "CardId": "MercenaryCaptain",
+  "BaseAttack": 3,
+  "BaseDefense": 2,
+  "BaseHealth": 3,
+  "EffectIDs": []
+}
