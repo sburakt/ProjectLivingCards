@@ -65,9 +65,8 @@ namespace TCG.Model.Actions
             // 5. Check for Death
             if (defenderCard.CurrentHealth <= 0)
             {
-                match.ActionStack.Push(new DestroyCardAction(_defenderCardID,
-                    _attackerSideIndex ^
-                    1)); //destruction by battle should be spesified but dont know where can be refactored later
+                match.PushAction(new DestroyCardAction(_defenderCardID,_attackerSideIndex ^ 1));
+                //destruction by battle should be spesified but dont know where can be refactored later
                 Debug.Log($"{defenderCard.StaticCard.CardId} was destroyed!");
             }
         }

@@ -37,13 +37,13 @@ namespace TCG.Model.Actions
             // 4. THE MATH
             if (defender != null)
             {
-                match.ActionStack.Push(new CardAttackCardAction(_attackerSideIndex, attacker.InstanceId,
+                match.PushAction(new CardAttackCardAction(_attackerSideIndex, attacker.InstanceId,
                     defender.InstanceId));
                 // action stack push attack card
             }
             else
             {
-                match.ActionStack.Push(new CardAttackSideAction(_attackerSideIndex, attacker.InstanceId));
+                match.PushAction(new CardAttackSideAction(_attackerSideIndex, attacker.InstanceId));
                 // Direct attack on the player
             }
         }

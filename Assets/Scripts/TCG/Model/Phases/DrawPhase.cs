@@ -37,7 +37,7 @@ namespace TCG.Model.Phases
                 
                 case DrawStep.Draw:
                     Debug.Log("Draw Phase Draw");
-                    match.ActionStack.Push(new DrawCardAction(match.ActiveSideIndex));
+                    match.PushAction(new DrawCardAction(match.ActiveSideIndex));
                     match.CurrentPhaseStep = (int)DrawStep.PostDraw;
                     break;
 

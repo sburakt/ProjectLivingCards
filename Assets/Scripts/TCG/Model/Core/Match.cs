@@ -21,16 +21,8 @@ namespace TCG.Model.Core
         private Side[] _sides = new Side[2];
         public IReadOnlyList<Side> Sides => _sides;
         public int ActiveSideIndex { get; private set; } = 0;
-
-        private Side _activeSide
-        {
-            get { return _sides[ActiveSideIndex]; }
-        }
-
-        private Side _oponentSide
-        {
-            get { return _sides[ActiveSideIndex ^ 1]; }
-        }
+        public Side ActiveSide => _sides[ActiveSideIndex];
+        public Side OpponentSide => _sides[ActiveSideIndex ^ 1];
 
         // phase variables
         private TurnPhase _currentPhase;
@@ -40,8 +32,13 @@ namespace TCG.Model.Core
         // gameplay variables
         private readonly List<Effect> _effects = new List<Effect>();
         public  IReadOnlyList<Effect> EffectList => _effects;
-        public  Stack<MatchAction> ActionStack = new Stack<MatchAction>();
+        private Stack<MatchAction> _actionStack = new Stack<MatchAction>();
         public readonly Queue<MatchEvent> EventQueue = new Queue<MatchEvent>();
+
+        public void PushAction(MatchAction action)
+        {
+            _actionStack.Push(action);
+        }
         
         public void AddEffect(Effect effect) => _effects.Add(effect);
 
@@ -126,9 +123,9 @@ namespace TCG.Model.Core
                 }
 
                 // before phase execution we must see if stack empty
-                if (ActionStack.Count > 0) // no internak while loop 
+                if (_actionStack.Count > 0) // no internak while loop 
                 {
-                    ActionStack.Pop().Execute(this);
+                    _actionStack.Pop().Execute(this);
                     ProcessEvents();
                 }
                 else // call phase execute 
@@ -222,7 +219,7 @@ namespace TCG.Model.Core
             foreach (var persistentCard in persistentCards)
             {
                 RuntimeCard runtimeCard = new RuntimeCard(nextIntanceID++, persistentCard, side, side);
-                // add any debuf to reuntime card here
+                // add any debuff to runtime card here
                 runtimeCards.Add(runtimeCard);
             }
 
