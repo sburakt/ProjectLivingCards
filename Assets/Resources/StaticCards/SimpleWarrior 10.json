@@ -1,7 +1,0 @@
-{
-  "CardId" : "SimpleWarrior",
-  "BaseAttack": 1 ,
-  "BaseDefense": 1,
-  "BaseHealth" : 1,
-  "EffectIDs" : []
-}
