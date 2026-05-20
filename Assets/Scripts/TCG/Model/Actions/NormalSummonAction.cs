@@ -1,12 +1,14 @@
 ﻿using TCG.Model.Cards;
 using TCG.Model.Core;
+using TCG.Model.Effects;
 using UnityEngine;
 
 namespace TCG.Model.Actions
 {
     public class NormalSummonAction : MatchAction
     {
-        // todo: extract push mechanic to be its own action
+        // todo: extract push mechanic to be its own action 
+        
         private int _summonerSideIndex;
         private int _cardId;
         private int _laneIndex;
@@ -47,13 +49,13 @@ namespace TCG.Model.Actions
                 {
                     // Push existing front card to the back
                     targetLane.BackCard = targetLane.FrontCard;
-                    targetLane.BackCard.ChangePosition(new Position()
+                    targetLane.BackCard.SetPosition(new Position()
                         { SideIndex = _summonerSideIndex, LaneIndex = _laneIndex, IsFront = false });
                     Debug.Log($"Notice: {targetLane.BackCard.StaticCard.CardId} was pushed to the Back row.");
                 }
 
                 targetLane.FrontCard = card;
-                targetLane.FrontCard.ChangePosition(new Position()
+                targetLane.FrontCard.SetPosition(new Position()
                     { SideIndex = _summonerSideIndex, LaneIndex = _laneIndex, IsFront = true });
 
             }
@@ -63,25 +65,32 @@ namespace TCG.Model.Actions
                 {
                     // Push existing back card to the front
                     targetLane.FrontCard = targetLane.BackCard;
-                    targetLane.FrontCard.ChangePosition(new Position()
+                    targetLane.FrontCard.SetPosition(new Position()
                         { SideIndex = _summonerSideIndex, LaneIndex = _laneIndex, IsFront = true });
                     Debug.Log($"Notice: {targetLane.FrontCard.StaticCard.CardId} was pushed to the Front row.");
                 }
 
                 targetLane.BackCard = card;
-                targetLane.BackCard.ChangePosition(new Position()
+                targetLane.BackCard.SetPosition(new Position()
                     { SideIndex = _summonerSideIndex, LaneIndex = _laneIndex, IsFront = false });
             }
 
             // 5. Finalize the play
             summonerSide.Hand.Remove(card);
             card.State = RuntimeCard.CardState.OnBoard;
+            
+            // 6. Add card's effect to the match's effect list
+            // dont know yet if all effect be active when a card summoned some card have effect from hand like winged kuriboh
+            // might need activate on summon interface future
+            foreach (Effect effect in card.CardEffects)
+            {
+                match.AddEffect(effect);
+                Debug.Log($"Notice: {card.StaticCard.EffectIDs[0]} was added to the Card effect.");
+            }
 
             string positionStr = _playToFront ? "Front" : "Back";
             Debug.Log(
                 $"ACTION: Player {_summonerSideIndex} played {card.StaticCard.CardId} to Lane {_laneIndex} ({positionStr})");
-
-            return; // "card has been played \n type \"end\" to to end the main phase or play another card";
         }
     }
 }
