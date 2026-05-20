@@ -46,6 +46,20 @@ namespace TCG.Model.Cards
                 _ => 0
             };
         }
+
+        public int CalculateStat(Match match,StatType type)
+        {
+            int stat = GetBaseStat(type);
+            foreach (Effect effect in match.EffectList)
+            {
+                if (effect is IStatModifier statModifier)
+                {
+                    stat = statModifier.ModifyStat(match, type, stat);
+                }
+            }
+            return stat;
+        }
+        
         public int CurrentAttack { get; private set; }
         public int CurrentDefense { get; private set; }
         public int CurrentHealth { get; private set; }
@@ -66,25 +80,55 @@ namespace TCG.Model.Cards
             CurrentDefense = BaseDefense;
             CurrentHealth = BaseHealth;        
             CardEffects = new List<Effect>();
-            // get the effect from effect dictionary
+            foreach (string effectId in StaticCard.EffectIDs)
+            {
+                CardEffects.Add(EffectLibrary.Create(effectId, instanceID));
+            }
         }
-
-        public void ChangeCurrentHealth(int value)
+        // each instance of an effect is new and in the card but they are activated from by match
+        // can make them static that takes constructor paramters in struct but then in the list i dont have class with polymorphsim and i check flags in struct for that?
+        // clone matches can use the same instances but some has local var? i can store local vars for effect in match like phases but dont really want to do that
+        
+        public void IncreaseHealth(int amount)
         {
-            CurrentHealth = value;
+            CurrentHealth += amount;
         }
 
-        public void ChangeCurrentAttack(int value)
+        public int DecreaseHealth(int amount)
         {
-            CurrentAttack = value;
+            int surplus = amount - CurrentHealth;
+            if (surplus > 0)
+            {
+                CurrentHealth = 0;
+                return surplus;
+            }
+            CurrentHealth -= amount;
+            return 0;
         }
 
-        public void ChangeCurrentDefense(int value)
+        public void IncreaseDefense(int amount)
         {
-            CurrentDefense = value;
+            CurrentDefense += amount;
         }
 
-        public void ChangePosition(Position position)
+        public int DecreaseDefense(int amount)
+        {
+            int surplus = amount - CurrentDefense;
+            if (surplus > 0)
+            {
+                CurrentDefense = 0;
+                return surplus;
+            }
+            CurrentDefense -= amount;
+            return 0;
+        }
+
+        public void SetDefense(int amount)
+        {
+            CurrentDefense = amount;
+        }
+
+        public void SetPosition(Position position)
         {
             Position = position;
         }
