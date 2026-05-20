@@ -32,12 +32,17 @@ namespace TCG.Model.Core
         // gameplay variables
         private readonly List<Effect> _effects = new List<Effect>();
         public  IReadOnlyList<Effect> EffectList => _effects;
-        private Stack<MatchAction> _actionStack = new Stack<MatchAction>();
-        public readonly Queue<MatchEvent> EventQueue = new Queue<MatchEvent>();
+        private readonly Stack<MatchAction> _actionStack = new Stack<MatchAction>();
+        private readonly Queue<MatchEvent> _eventQueue = new Queue<MatchEvent>();
 
         public void PushAction(MatchAction action)
         {
             _actionStack.Push(action);
+        }
+
+        public void EnqueueEvent(MatchEvent mEvent)
+        {
+            _eventQueue.Enqueue(mEvent);
         }
         
         public void AddEffect(Effect effect) => _effects.Add(effect);
@@ -126,22 +131,26 @@ namespace TCG.Model.Core
                 if (_actionStack.Count > 0) // no internak while loop 
                 {
                     _actionStack.Pop().Execute(this);
-                    ProcessEvents();
                 }
                 else // call phase execute 
                 {
                     _currentPhase.Execute(this);
-                    ProcessEvents();
                 }
+                ProcessEvents();
+                RemoveTerminatedEffects();
             }
         }
 
         private void ProcessEvents()
         {
-            while (EventQueue.Count > 0)
+            while (_eventQueue.Count > 0)
             {
-                MatchEvent currentEvent = EventQueue.Dequeue();
-                // for each Event Listener here later
+                MatchEvent currentEvent = _eventQueue.Dequeue();
+                foreach (Effect effect in _effects)
+                {
+                    if (effect is IReactiveEffect reactive)
+                        reactive.React(this, currentEvent);
+                }
             }
         }
 
