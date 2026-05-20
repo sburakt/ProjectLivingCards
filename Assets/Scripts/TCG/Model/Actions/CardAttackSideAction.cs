@@ -20,7 +20,7 @@ namespace TCG.Model.Actions
         {
             RuntimeCard attackerCard = match.FindRuntimeCardById(_attackerCardID, _attackerSideIndex);
             Side defenderSide = match.Sides[_attackerSideIndex ^ 1];
-            int damage = attackerCard.CurrentAttack;
+            int damage = attackerCard.CalculateStat(match, RuntimeCard.StatType.Attack);
 
             //Fizzle checks
 
