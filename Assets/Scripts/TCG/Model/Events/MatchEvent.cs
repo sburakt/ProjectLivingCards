@@ -14,6 +14,7 @@ namespace TCG.Model.Events
         CardPlayed,
         CardDamaged,
         CardDestroyed,
+        CardMoved,
         PlayerDamaged,
         TurnStarted,
     }
