@@ -12,7 +12,11 @@ namespace TCG.Model.Effects
         }
 
         public abstract bool ShouldTerminate(Match match);
-        
-        public abstract void Terminate(Match match);
+
+        public virtual void Terminate(Match match)
+        {
+            //do nothing
+            // for effect that need to undo their effect on the match
+        }
     }
 }

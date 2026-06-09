@@ -48,11 +48,6 @@ namespace TCG.Model.Effects
                 return true;
             return false;
         }
-
-        public override void Terminate(Match match)
-        {
-            // do nothing
-        }
         
     }
 }
