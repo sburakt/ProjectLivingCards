@@ -27,12 +27,21 @@ namespace TCG.Model.Actions
             //Fizzle checks
 
             // check if any card is null
+            
+            if (attackerCard == null || defenderCard == null)
+                return;
 
             // check if attacker card is on the attacker field
-
+        
+            if (attackerCard.Position.SideIndex != _attackerSideIndex)
+                return;
             // check if defender card is on the defender field
+            
+            if (defenderCard.Position.SideIndex == _attackerSideIndex)
+                return;
 
-            // check for any flag that cancels action ig cannott attack or cannot be attacked
+            // TODO check for any flag that cancels action ig cannott attack or cannot be attacked
+          
             
             int amount = attackerCard.CalculateStat(match, RuntimeCard.StatType.Attack);
             match.PushAction( new DealCardDamageAction( _defenderCardID , _attackerSideIndex ^ 1, amount) );
