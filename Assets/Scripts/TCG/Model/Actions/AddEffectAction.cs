@@ -16,6 +16,11 @@ namespace TCG.Model.Actions
         public override void Execute(Match match)
         {
             match.AddEffect(_effectToAdd);
+            match.EnqueueEvent(new MatchEvent()
+            {
+                Type = MatchEventType.EffectAdded,
+                // insufficent
+            });
         }
     }
 }

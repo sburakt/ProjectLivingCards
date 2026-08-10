@@ -1,6 +1,6 @@
 ﻿using TCG.Model.Core;
 using TCG.Model.Actions;
-
+using TCG.Model.Events;
 using UnityEngine;
 
 namespace TCG.Model.Phases
@@ -51,6 +51,11 @@ namespace TCG.Model.Phases
                 case DrawStep.Finished:
                     Debug.Log("Draw Phase Finished");
                     match.AdvancePhase();
+                    match.EnqueueEvent(new MatchEvent()
+                    {
+                        Type = MatchEventType.TurnStarted,
+                        SourceId = match.ActiveSideIndex
+                    });
                     break;
             }
         }

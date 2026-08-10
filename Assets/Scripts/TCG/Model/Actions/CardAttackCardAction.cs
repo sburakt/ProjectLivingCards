@@ -1,6 +1,7 @@
 ﻿using System;
 using TCG.Model.Cards;
 using TCG.Model.Core;
+using TCG.Model.Events;
 using UnityEngine;
 
 namespace TCG.Model.Actions
@@ -45,6 +46,12 @@ namespace TCG.Model.Actions
             
             int amount = attackerCard.CalculateStat(match, RuntimeCard.StatType.Attack);
             match.PushAction( new DealCardDamageAction( _defenderCardID , _attackerSideIndex ^ 1, amount) );
+            match.EnqueueEvent(new MatchEvent()
+            {
+                Type = MatchEventType.CardAttackCard,
+                SourceId = _attackerCardID,
+                TargetId = _defenderCardID
+            });
         }
     }
 }

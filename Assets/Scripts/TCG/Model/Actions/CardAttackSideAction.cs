@@ -1,5 +1,6 @@
 ﻿using TCG.Model.Cards;
 using TCG.Model.Core;
+using TCG.Model.Events;
 using UnityEngine;
 
 namespace TCG.Model.Actions
@@ -32,7 +33,13 @@ namespace TCG.Model.Actions
 
 
             // 1. Safety check (just in case attack was reduced to 0 by a debuff)
-            if (damage <= 0) return;
+            if (damage > 0)
+                match.EnqueueEvent(new MatchEvent()
+                {
+                    Type = MatchEventType.PlayerDamaged,
+                    SourceId = _attackerSideIndex ^ 1,
+                    Value = damage
+                });
 
             // 2. Apply damage directly to the player's health. 
             // (Adjust 'Health' depending on where your health integer is stored!)
@@ -52,6 +59,11 @@ namespace TCG.Model.Actions
                 // You would trigger your match-ending logic here in the future
                 // match.TriggerGameOver(winner: attackerSide);
             }
+            match.EnqueueEvent(new MatchEvent()
+            {
+                Type = MatchEventType.CardAttackSide,
+                SourceId = _attackerCardID,
+            });
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using TCG.Model.Cards;
 using TCG.Model.Core;
 using TCG.Model.Effects;
+using TCG.Model.Events;
 using UnityEngine;
 
 namespace TCG.Model.Actions
@@ -78,6 +79,11 @@ namespace TCG.Model.Actions
             // 5. Finalize the play
             summonerSide.Hand.Remove(card);
             card.State = RuntimeCard.CardState.OnBoard;
+            match.EnqueueEvent(new MatchEvent()
+            {
+                Type = MatchEventType.CardPlayed,
+                SourceId = _cardId,
+            });
             
             // 6. Add card's effect to the match's effect list
             // dont know yet if all effect be active when a card summoned some card have effect from hand like winged kuriboh

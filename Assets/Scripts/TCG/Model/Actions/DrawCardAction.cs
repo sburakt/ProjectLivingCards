@@ -1,5 +1,6 @@
 ﻿using TCG.Model.Cards;
 using TCG.Model.Core;
+using TCG.Model.Events;
 using UnityEngine;
 
 namespace TCG.Model.Actions
@@ -35,6 +36,11 @@ namespace TCG.Model.Actions
             //debug
             string cardId = drawnCard.StaticCard.CardId;
             Debug.Log($"Side {_drawingSideIndex} drew: {cardId}. Hand size: {drawingSide.Hand.Count}");
+            match.EnqueueEvent(new MatchEvent()
+            {
+                Type = MatchEventType.CardDrawn,
+                SourceId = _drawingSideIndex,
+            });
         }
     }
 }
