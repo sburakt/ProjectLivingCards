@@ -13,12 +13,12 @@ namespace TCG.Model.Core
     public class Match
     {
         // match vars
-        private int nextIntanceID = 1;
-        private bool MatchOver = false;
-        private Player[] _players = new Player[2];
+        private int _nextInstanceID = 1;
+        private bool _matchOver = false;
+        private readonly Player[] _players = new Player[2];
 
         // side variables
-        private Side[] _sides = new Side[2];
+        private readonly Side[] _sides = new Side[2];
         public IReadOnlyList<Side> Sides => _sides;
         public int ActiveSideIndex { get; private set; } = 0;
         public Side ActiveSide => _sides[ActiveSideIndex];
@@ -34,6 +34,7 @@ namespace TCG.Model.Core
         public  IReadOnlyList<Effect> EffectList => _effects;
         private readonly Stack<MatchAction> _actionStack = new Stack<MatchAction>();
         private readonly Queue<MatchEvent> _eventQueue = new Queue<MatchEvent>();
+        public readonly Queue<MatchEvent> EventLog = new Queue<MatchEvent>();
 
         public void PushAction(MatchAction action)
         {
@@ -53,13 +54,25 @@ namespace TCG.Model.Core
         }
 
         // test variables (temp)
-        private readonly Queue<string> _debugQueue;
-        private readonly Queue<string> _inputQueue;
-        public readonly Queue<string> OutputQueue;
+        //public Queue<string> OutputQueue { get; } = new Queue<string>();
+        
+        private string _pendingInputRequest;
+        
+        public void RequestInput(string output) 
+        {
+            _pendingInputRequest = output;
+        }
+
+        public string ConsumeInputRequest()
+        {
+            string temp = _pendingInputRequest;
+            _pendingInputRequest = null;
+            return temp;
+        }
 
         public string PendingInput { get; private set; }
 
-        private void ReceiveInput(string input)
+        public void ReceiveInput(string input) 
         {
             PendingInput = input;
         }
@@ -78,20 +91,17 @@ namespace TCG.Model.Core
             End
         }
 
-        public Match(Player p1, Player p2, Queue<string> outputQueue, Queue<string> inputQueue,
-            Queue<string> debugQueue)
+        public Match(Player p1, Player p2)
         {
             _players[0] = p1;
             _players[1] = p2;
             _sides[0] = new Side();
             _sides[1] = new Side();
-            _debugQueue = debugQueue;
-            OutputQueue = outputQueue;
-            _inputQueue = inputQueue;
             InitializeMatch();
         }
 
-        public void InitializeMatch()
+
+        private void InitializeMatch()
         {
             for (int i = 0; i < 2; i++)
             {
@@ -103,42 +113,34 @@ namespace TCG.Model.Core
             Debug.Log($"deck size is {_sides[0].Deck.Count}");
             Debug.Log(_sides[0].Deck[0].BaseDefense);
             ChangePhase(DrawPhase.Instance);
-            LogicLoop();
         }
 
-        public void LogicLoop()
+        public void Resolve()
         {
-            Debug.Log("LogicLoop recalled");
-            while (!MatchOver)
+            while (!_matchOver)
             {
                 // if we asked for an input we must wait for it priority 1
-                if (OutputQueue.Count >
-                    0) // for now we use output queue i know it shouldnt excide 1 but that what we already have in hand and we use this for now
+                if (_pendingInputRequest is not null) // for now we use output queue i know it shouldnt excide 1 but that what we already have in hand and we use this for now
                 {
-                    SendGameStateToView();
                     break;
                 }
-
-                // if we get input we must have it in the phase priority 2
-                if (_inputQueue.TryDequeue(out string input1))
-                {
-                    Debug.Log($"Match pulled '{input1}' from queue. Passing to Phase.");
-                    ReceiveInput(
-                        input1); // this method only works with phases will be changed later for now no action requires input
-                }
-
-                // before phase execution we must see if stack empty
-                if (_actionStack.Count > 0) // no internak while loop 
-                {
-                    _actionStack.Pop().Execute(this);
-                }
-                else // call phase execute 
-                {
-                    _currentPhase.Execute(this);
-                }
-                ProcessEvents();
-                RemoveTerminatedEffects();
+                Tick();
             }
+        }
+
+        private void Tick()
+        {
+                // before phase execution we must see if stack empty
+            if (_actionStack.Count > 0) // no internak while loop 
+            {
+                _actionStack.Pop().Execute(this);
+            }
+            else // call phase execute 
+            {
+                _currentPhase.Execute(this);
+            }
+            ProcessEvents();
+            RemoveTerminatedEffects();
         }
 
         private void ProcessEvents()
@@ -151,11 +153,12 @@ namespace TCG.Model.Core
                     if (effect is IReactiveEffect reactive)
                         reactive.React(this, currentEvent);
                 }
+                EventLog.Enqueue(currentEvent);
             }
         }
 
         // for test only
-        public void SendGameStateToView()
+        public string GetStringState()
         {
             string state = "=== CURRENT GAME STATE ===\n";
 
@@ -182,7 +185,7 @@ namespace TCG.Model.Core
 
             state += "==========================";
 
-            _debugQueue.Enqueue(state);
+            return state;
         }
 
         public RuntimeCard FindRuntimeCardById(int targetId, int expectedSideHint = 0)
@@ -227,7 +230,7 @@ namespace TCG.Model.Core
             List<RuntimeCard> runtimeCards = new();
             foreach (var persistentCard in persistentCards)
             {
-                RuntimeCard runtimeCard = new RuntimeCard(nextIntanceID++, persistentCard, side, side);
+                RuntimeCard runtimeCard = new RuntimeCard(_nextInstanceID++, persistentCard, side, side);
                 // add any debuff to runtime card here
                 runtimeCards.Add(runtimeCard);
             }

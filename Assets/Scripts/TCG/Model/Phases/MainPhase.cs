@@ -23,7 +23,7 @@ namespace TCG.Model.Phases
         {
             if (string.IsNullOrEmpty(match.PendingInput))
             {
-                match.OutputQueue.Enqueue("Expected: Play_InstanceID_LaneIndex_Front/Back or end");
+                match.RequestInput("Expected: Play_InstanceID_LaneIndex_Front/Back or end");
                 return;
             }
 
@@ -41,7 +41,7 @@ namespace TCG.Model.Phases
             }
             else
             {
-                match.OutputQueue.Enqueue("Expected: Play_InstanceID_LaneIndex_Front/Back or end");
+                match.RequestInput("Expected: Play_InstanceID_LaneIndex_Front/Back or end");
             }
         }
 
@@ -62,17 +62,17 @@ namespace TCG.Model.Phases
             {
                 if (!int.TryParse(parts[1], out int instanceId))
                 {
-                    match.OutputQueue.Enqueue("InstanceID is invalid");
+                    match.RequestInput("InstanceID is invalid");
                     return;
                 }
                 if (!int.TryParse(parts[2], out int laneIndex))
                 {
-                    match.OutputQueue.Enqueue("laneIndex is invalid");
+                    match.RequestInput("laneIndex is invalid");
                     return;
                 }
                 if (laneIndex > 2 || laneIndex < 0)
                 {
-                    match.OutputQueue.Enqueue("laneIndex is invalid must be between 0 and 2");
+                    match.RequestInput("laneIndex is invalid must be between 0 and 2");
                     return;
                 }
                 bool playToFront = parts[3].ToLower() == "front";
@@ -90,8 +90,8 @@ namespace TCG.Model.Phases
             {
                 // Validation failed! 
                 // Send the error to the UI/Console queue
-                match.OutputQueue.Enqueue($"Instance ID {instanceId} is not found in your hand. there are {activeSide.Hand.Count}" +
-                                          $"\n cards in your hand. {string.Join(", ", activeSide.Hand.Select(p => p.InstanceId))}" );
+                match.RequestInput($"Instance ID {instanceId} is not found in your hand. there are {activeSide.Hand.Count}" +
+                                   $"\n cards in your hand. {string.Join(", ", activeSide.Hand.Select(p => p.InstanceId))}" );
                 return;
             }
             // 2. Validation passed! Pass the execution down to the mechanic.

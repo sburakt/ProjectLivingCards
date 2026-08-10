@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TCG.Model.Cards;
 using TCG.Model.Core;
+using TCG.Presenter;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
@@ -13,19 +14,21 @@ public class GameInitializer : MonoBehaviour
     [SerializeField] private Text _text;
     [SerializeField] private Text _StateText;
     [SerializeField] private InputField _inputField;
+    [SerializeField] private Text _logs;
     //[SerializeField] private List<PersistentCard> EnemyDeck;
-    Queue<string> stateQueue = new Queue<string>();
-    Queue<string> outputQueue = new Queue<string>();
-    Queue<string> inputQueue = new Queue<string>();
-    bool isWaitingForInput = false;
+    //Queue<string> stateQueue = new Queue<string>();
+    //Queue<string> outputQueue = new Queue<string>();
+    //Queue<string> inputQueue = new Queue<string>();
+    private bool _isWaitingForInput = false;
     Match _match;
+    MatchPresenter _presenter;
     private void Start()
     {
         Debug.Log("pre Game initialized");
         Initialize();
     }
 
-
+    public Action<string> OnMoveSubmitted;
     public void Initialize()
     {
         // get deck json create static cards
@@ -38,31 +41,43 @@ public class GameInitializer : MonoBehaviour
         enemyPlayer.PersistentDeck = PlayerDeck;
 
         // create match
-        _match = new Match(gamePlayer,enemyPlayer,outputQueue,inputQueue, stateQueue);
+        _match = new Match(gamePlayer, enemyPlayer);  //,outputQueue,inputQueue, stateQueue);
+        // create presenter
+        _presenter = new MatchPresenter(_match,this);
 
         // start match
+        _presenter.StartMatch();
+    }
+
+    public void ShowState(string state)
+    {
+        _StateText.text = state;
+    }
+
+    public void AddLog(string log)
+    {
+        _logs.text += "\n" +log;
+    }
+
+    public void ShowOutput(string output)
+    {
+        _text.text = output;
+        _isWaitingForInput = true;
+    }
+
+    public void SendMove(string move)
+    {
+        OnMoveSubmitted?.Invoke(move);
     }
 
     public void Update()
     {
-        if (stateQueue.Count > 0)
-        {
-            string output = stateQueue.Dequeue();
-            _StateText.text = output;
-        }
-        if (outputQueue.Count > 0 && !isWaitingForInput)
-        {
-            isWaitingForInput = true;
-            string output = outputQueue.Dequeue();
-            _text.text = output;
-        }
-        else if (isWaitingForInput)
+        if (_isWaitingForInput)
         {
             if (Input.GetKeyDown(KeyCode.Return))
             {
-                inputQueue.Enqueue(_inputField.text);
-                isWaitingForInput = false;
-                _match.LogicLoop();
+                _isWaitingForInput = false;
+                SendMove(_inputField.text);
             }
         }
     }
