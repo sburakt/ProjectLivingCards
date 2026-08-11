@@ -40,6 +40,7 @@ namespace TCG.Model.Actions
             {
                 Type = MatchEventType.CardDrawn,
                 SourceId = _drawingSideIndex,
+                TargetId = drawnCard.InstanceId
             });
         }
     }

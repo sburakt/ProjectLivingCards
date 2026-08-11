@@ -63,6 +63,7 @@ namespace TCG.Model.Actions
             {
                 Type = MatchEventType.CardAttackSide,
                 SourceId = _attackerCardID,
+                Value = damage
             });
         }
     }

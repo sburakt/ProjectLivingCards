@@ -21,28 +21,23 @@ namespace TCG.Model.Phases
     
         public override void Execute(Match match)
         {
-            if (string.IsNullOrEmpty(match.PendingInput))
+            PlayerMove move = match.ConsumeMove();
+            if (move == null)
             {
-                match.RequestInput("Expected: Play_InstanceID_LaneIndex_Front/Back or end");
+                match.RequestInput($"Waiting for Main Phase to move from player{match.ActiveSideIndex}");
                 return;
             }
-
-            // store it locally and clear no double processing
-            string inputToProcess = match.PendingInput;
-            match.ClearInput();
-
-            if (inputToProcess.ToLower() == "end")
+            if (move is PlayCardMove playCardMove)
+            {
+                PlayCardFromHand(match, playCardMove.CardInstanceId, playCardMove.LaneIndex, playCardMove.IsFront);
+                return;
+            }
+            if (move is EndTurnMove endTurnMove)
             {
                 match.AdvancePhase();
+                return;
             }
-            else if (inputToProcess.ToLower().StartsWith("play"))
-            {
-                ParseSummon(inputToProcess, match);
-            }
-            else
-            {
-                match.RequestInput("Expected: Play_InstanceID_LaneIndex_Front/Back or end");
-            }
+            //if (move is ActivateEffectMove activateEffectMove) {}
         }
 
         public override void Exit(Match match)
@@ -53,31 +48,6 @@ namespace TCG.Model.Phases
         public override TurnPhase GetNextPhase()
         {
             return BattlePhase.Instance;
-        }
-
-        private void ParseSummon(string input, Match match)
-        {
-            string[] parts = input.Split('_');
-            if (parts.Length == 4 && parts[0].ToLower() == "play")
-            {
-                if (!int.TryParse(parts[1], out int instanceId))
-                {
-                    match.RequestInput("InstanceID is invalid");
-                    return;
-                }
-                if (!int.TryParse(parts[2], out int laneIndex))
-                {
-                    match.RequestInput("laneIndex is invalid");
-                    return;
-                }
-                if (laneIndex > 2 || laneIndex < 0)
-                {
-                    match.RequestInput("laneIndex is invalid must be between 0 and 2");
-                    return;
-                }
-                bool playToFront = parts[3].ToLower() == "front";
-                PlayCardFromHand(match, instanceId, laneIndex, playToFront);
-            }
         }
 
         public void PlayCardFromHand(Match match, int instanceId, int laneIndex, bool playToFront)

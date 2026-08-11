@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TCG;
 using TCG.Model.Cards;
 using TCG.Model.Core;
 using TCG.Presenter;
@@ -15,10 +16,7 @@ public class GameInitializer : MonoBehaviour
     [SerializeField] private Text _StateText;
     [SerializeField] private InputField _inputField;
     [SerializeField] private Text _logs;
-    //[SerializeField] private List<PersistentCard> EnemyDeck;
-    //Queue<string> stateQueue = new Queue<string>();
-    //Queue<string> outputQueue = new Queue<string>();
-    //Queue<string> inputQueue = new Queue<string>();
+    
     private bool _isWaitingForInput = false;
     Match _match;
     MatchPresenter _presenter;
@@ -41,7 +39,7 @@ public class GameInitializer : MonoBehaviour
         enemyPlayer.PersistentDeck = PlayerDeck;
 
         // create match
-        _match = new Match(gamePlayer, enemyPlayer);  //,outputQueue,inputQueue, stateQueue);
+        _match = new Match(gamePlayer, enemyPlayer);
         // create presenter
         _presenter = new MatchPresenter(_match,this);
 
@@ -65,9 +63,9 @@ public class GameInitializer : MonoBehaviour
         _isWaitingForInput = true;
     }
 
-    public void SendMove(string move)
+    public void SendMove(string stringMove)
     {
-        OnMoveSubmitted?.Invoke(move);
+        OnMoveSubmitted?.Invoke(stringMove);
     }
 
     public void Update()

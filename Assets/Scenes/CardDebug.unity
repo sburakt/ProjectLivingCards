@@ -461,7 +461,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -209, y: 101}
+  m_AnchoredPosition: {x: 271, y: 194}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1294433036
@@ -1064,7 +1064,7 @@ MonoBehaviour:
   _text: {fileID: 611642634}
   _StateText: {fileID: 1370609283}
   _inputField: {fileID: 1470397113}
-  _logs: {fileID: 0}
+  _logs: {fileID: 1294433036}
 --- !u!4 &2140604331
 Transform:
   m_ObjectHideFlags: 0

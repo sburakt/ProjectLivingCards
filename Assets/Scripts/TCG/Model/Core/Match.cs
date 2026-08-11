@@ -71,17 +71,20 @@ namespace TCG.Model.Core
         }
 
         public string PendingInput { get; private set; }
+        private PlayerMove _pendingMove;
 
-        public void ReceiveInput(string input) 
+        public void ReceiveMove(PlayerMove move)
         {
-            PendingInput = input;
+            _pendingMove = move;
         }
 
-        public void ClearInput()
+        public PlayerMove ConsumeMove()
         {
-            PendingInput = null;
+            PlayerMove temp = _pendingMove;
+            _pendingMove = null;
+            return temp;
         }
-
+        
         public enum TurnState
         {
             Draw,
@@ -97,11 +100,11 @@ namespace TCG.Model.Core
             _players[1] = p2;
             _sides[0] = new Side();
             _sides[1] = new Side();
-            InitializeMatch();
+            //InitializeMatch();
         }
 
 
-        private void InitializeMatch()
+        public void InitializeMatch()
         {
             for (int i = 0; i < 2; i++)
             {
@@ -155,6 +158,11 @@ namespace TCG.Model.Core
                 }
                 EventLog.Enqueue(currentEvent);
             }
+        }
+
+        public List<PlayerMove> GetLegalMoves()
+        {
+            return new List<PlayerMove>();
         }
 
         // for test only
