@@ -98,8 +98,8 @@ namespace TCG.Model.Core
         {
             _players[0] = p1;
             _players[1] = p2;
-            _sides[0] = new Side();
-            _sides[1] = new Side();
+            _sides[0] = new Side(0);
+            _sides[1] = new Side(1);
             //InitializeMatch();
         }
 
@@ -162,7 +162,17 @@ namespace TCG.Model.Core
 
         public List<PlayerMove> GetLegalMoves()
         {
-            return new List<PlayerMove>();
+            List<PlayerMove> moves = new List<PlayerMove>();
+            
+            moves.AddRange(_currentPhase.GetLegalMoves(this));
+
+            // TODO refactor once input/move required effects are added and finalized
+            foreach (Effect effect in _effects)
+            {
+                // if (effect is IActivatableEffect activatable && activatable.CanActivate(this))
+                   // moves.AddRange(activatable.GetActivationCommands(this));
+            }
+            return moves;
         }
 
         // for test only

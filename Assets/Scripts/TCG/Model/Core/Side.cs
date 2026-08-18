@@ -4,15 +4,17 @@ using TCG.Model.Cards;
 namespace TCG.Model.Core
 {
     public class Side
-    {   
+    {
+        public readonly int SideIndex;
         public int LifePoints { get; set; }
         public Field Field { get; private set; }
         public List<RuntimeCard> Deck; // { get; private set; }
         public List<RuntimeCard> Hand { get; private set; }
         public List<RuntimeCard> Graveyard { get; private set; }
 
-        public Side()
+        public Side(int sideIndex)
         {
+            SideIndex = sideIndex;
             LifePoints = 40;
             Field = new Field();
             Deck = new List<RuntimeCard>();
@@ -20,6 +22,42 @@ namespace TCG.Model.Core
             Graveyard = new List<RuntimeCard>();
         }
 
+        public IEnumerable<RuntimeCard> GetCardSlotsInField()
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                foreach (Lane lane in Field.Lanes)
+                {
+                    yield return i==0? lane.FrontCard: lane.BackCard;
+                }
+            }
+        }
+
+        public IEnumerable<RuntimeCard> GetCardsInField()
+        {
+            foreach (Lane lane in Field.Lanes)
+            {
+                if (lane.FrontCard != null)
+                    yield return lane.FrontCard;
+                
+                if (lane.BackCard != null)
+                    yield return lane.BackCard;
+            }
+        }
+        
+        public IEnumerable<Position> GetPositions()
+        {
+            for (int i = 0; i < Field.Lanes.Length; i++)
+            {
+                if (!Field.Lanes[i].IsFull())
+                {
+                    yield return new Position { SideIndex = SideIndex, LaneIndex = i, IsFront = true };
+                    yield return new Position { SideIndex = SideIndex, LaneIndex = i, IsFront = false };
+                }
+            }
+        }
+        
+        
         public RuntimeCard FindRuntimeCardById(int instanceId)
         {
             // 1 Search the Field

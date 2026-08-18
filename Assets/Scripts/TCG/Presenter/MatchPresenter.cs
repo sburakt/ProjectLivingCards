@@ -1,7 +1,4 @@
-using System;
 using TCG.Model.Core;
-using TCG.Model.Events;
-using UnityEngine;
 
 namespace TCG.Presenter
 {
@@ -9,7 +6,6 @@ namespace TCG.Presenter
     {
         private readonly Match _match;
         private readonly GameInitializer _gameInitializer;
-        //private readonly 
 
         public MatchPresenter(Match match, GameInitializer gameInitializer)
         {
@@ -29,12 +25,14 @@ namespace TCG.Presenter
             _match.Resolve();
             _gameInitializer.ShowState(_match.GetStringState());
             _gameInitializer.ShowOutput(_match.ConsumeInputRequest());
-            AddAllLogsFromQueue(); 
+            _gameInitializer.ShowMoves(_match.GetLegalMoves());
+            AddAllLogsFromQueue();
+            
         }
 
-        private void HandleUserInput(string stringMove)
+        private void HandleUserInput(PlayerMove move)
         {
-            _match.ReceiveMove(ParseMove(stringMove, _match));
+            _match.ReceiveMove(move);
             ContinueMatch();
         }
 
@@ -74,8 +72,13 @@ namespace TCG.Presenter
                     return null;
                 }
                 bool playToFront = parts[3].ToLower() == "front";
-                return new PlayCardMove(_match.ActiveSideIndex, instanceId, laneIndex, playToFront);
-                //PlayCardFromHand(match, instanceId, laneIndex, playToFront);
+                Position position = new Position()
+                {
+                    SideIndex = match.ActiveSideIndex,
+                    LaneIndex = laneIndex,
+                    IsFront = playToFront
+                };
+                return new PlayCardMove(_match.ActiveSideIndex, instanceId, position);
             }
             return null;
         }

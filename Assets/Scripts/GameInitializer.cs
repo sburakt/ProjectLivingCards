@@ -5,6 +5,7 @@ using TCG;
 using TCG.Model.Cards;
 using TCG.Model.Core;
 using TCG.Presenter;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
@@ -16,7 +17,10 @@ public class GameInitializer : MonoBehaviour
     [SerializeField] private Text _StateText;
     [SerializeField] private InputField _inputField;
     [SerializeField] private Text _logs;
+    [SerializeField] private Transform _moveButtonContainer;
+    [SerializeField] private Button _buttonPrefab;
     
+    private List<PlayerMove> _moves;
     private bool _isWaitingForInput = false;
     Match _match;
     MatchPresenter _presenter;
@@ -26,7 +30,7 @@ public class GameInitializer : MonoBehaviour
         Initialize();
     }
 
-    public Action<string> OnMoveSubmitted;
+    public Action<PlayerMove> OnMoveSubmitted;
     public void Initialize()
     {
         // get deck json create static cards
@@ -52,6 +56,19 @@ public class GameInitializer : MonoBehaviour
         _StateText.text = state;
     }
 
+    public void ShowMoves(List<PlayerMove> moves)
+    {
+        foreach (PlayerMove move in moves)
+        {
+            PlayerMove captured = move;
+            Button btn = Instantiate(_buttonPrefab, _moveButtonContainer);
+            btn.GetComponentInChildren<Text>().text = move.ToDisplayString();
+            btn.onClick.AddListener(() => SendMove(captured));
+        }
+    }
+    
+    
+
     public void AddLog(string log)
     {
         _logs.text += "\n" +log;
@@ -63,20 +80,18 @@ public class GameInitializer : MonoBehaviour
         _isWaitingForInput = true;
     }
 
-    public void SendMove(string stringMove)
-    {
-        OnMoveSubmitted?.Invoke(stringMove);
-    }
-
-    public void Update()
+    private void SendMove(PlayerMove move)
     {
         if (_isWaitingForInput)
         {
-            if (Input.GetKeyDown(KeyCode.Return))
+            _isWaitingForInput = false;
+            foreach (Transform child in _moveButtonContainer)
             {
-                _isWaitingForInput = false;
-                SendMove(_inputField.text);
+                Destroy(child.gameObject);
             }
+            OnMoveSubmitted?.Invoke(move);
         }
     }
+
+    //public void Update(){}
 }
