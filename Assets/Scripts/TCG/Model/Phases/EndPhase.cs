@@ -35,7 +35,8 @@ namespace TCG.Model.Phases
             switch (currentBattleStep)
             {
                 case EndSteps.Restore:
-                    match.PushAction(new RestoreSideDefenseAction(match.ActiveSideIndex));
+                    // no restoring the def for now to test if game feels faster/better this way
+                    //match.PushAction(new RestoreSideDefenseAction(match.ActiveSideIndex));
                     match.CurrentPhaseStep = (int)EndSteps.PostRestore;
                     break;
 

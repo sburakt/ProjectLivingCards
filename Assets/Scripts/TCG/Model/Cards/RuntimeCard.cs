@@ -21,7 +21,6 @@ namespace TCG.Model.Cards
         public enum StatType
         {
             Attack,
-            Defense,
             Health
         }
 
@@ -42,7 +41,6 @@ namespace TCG.Model.Cards
             {
                 StatType.Attack => BaseAttack,
                 StatType.Health => BaseHealth,
-                StatType.Defense => BaseDefense,
                 _ => 0
             };
         }
@@ -61,7 +59,6 @@ namespace TCG.Model.Cards
         }
         
         public int CurrentAttack { get; private set; }
-        public int CurrentDefense { get; private set; }
         public int CurrentHealth { get; private set; }
     
         //functions
@@ -77,7 +74,6 @@ namespace TCG.Model.Cards
             BaseDefense = StaticCard.BaseDefense;
             BaseHealth = StaticCard.BaseHealth;
             CurrentAttack = BaseAttack;
-            CurrentDefense = BaseDefense;
             CurrentHealth = BaseHealth;        
             CardEffects = new List<Effect>();
             foreach (string effectId in StaticCard.EffectIDs)
@@ -106,31 +102,10 @@ namespace TCG.Model.Cards
             return 0;
         }
 
-        public void IncreaseDefense(int amount)
-        {
-            CurrentDefense += amount;
-        }
-
-        public int DecreaseDefense(int amount)
-        {
-            int surplus = amount - CurrentDefense;
-            if (surplus > 0)
-            {
-                CurrentDefense = 0;
-                return surplus;
-            }
-            CurrentDefense -= amount;
-            return 0;
-        }
 
         public void SetState(CardState state)
         {
             State = state;
-        }
-
-        public void SetDefense(int amount)
-        {
-            CurrentDefense = amount;
         }
 
         public void SetPosition(Position position)

@@ -1,4 +1,5 @@
-﻿using TCG.Model.Cards;
+﻿/*
+using TCG.Model.Cards;
 using TCG.Model.Core;
 using UnityEngine;
 
@@ -44,3 +45,4 @@ namespace TCG.Model.Actions
         }
     }
 }
+*/
