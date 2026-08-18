@@ -25,7 +25,7 @@ namespace TCG.Model.Cards
             Health
         }
 
-        public CardState State; // { get; private set; }
+        public CardState State { get; private set; }
         public List<Effect> CardEffects { get; private set; }
         public Side Owner { get; private set; }
         public Side Controller { get; private set; }
@@ -123,6 +123,11 @@ namespace TCG.Model.Cards
             return 0;
         }
 
+        public void SetState(CardState state)
+        {
+            State = state;
+        }
+
         public void SetDefense(int amount)
         {
             CurrentDefense = amount;
@@ -133,12 +138,4 @@ namespace TCG.Model.Cards
             Position = position;
         }
     }
-
-    public struct Position
-    {
-        public int  SideIndex;
-        public int LaneIndex;
-        public bool IsFront;
-    }
-
 }

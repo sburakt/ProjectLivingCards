@@ -78,7 +78,7 @@ namespace TCG.Model.Actions
 
             // 5. Finalize the play
             summonerSide.Hand.Remove(card);
-            card.State = RuntimeCard.CardState.OnBoard;
+            card.SetState(RuntimeCard.CardState.OnBoard);
             match.EnqueueEvent(new MatchEvent()
             {
                 Type = MatchEventType.CardPlayed,

@@ -42,7 +42,7 @@ namespace TCG.Model.Actions
             // clean up handle should be done systematically not in the destruction refactor this later
             // maybe send graveyard as an action not sure if that will be needed any effect that will work between destroy and graveyard possible
 
-            card.State = RuntimeCard.CardState.InGraveyard;
+            card.SetState(RuntimeCard.CardState.InGraveyard);
             ownerSide.Graveyard.Add(card);
             
             match.EnqueueEvent( new MatchEvent()

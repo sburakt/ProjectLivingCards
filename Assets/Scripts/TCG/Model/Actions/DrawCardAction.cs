@@ -32,7 +32,7 @@ namespace TCG.Model.Actions
             drawingSide.Deck.RemoveAt(drawingSide.Deck.Count - 1);
             // put the card to hand and change status
             drawingSide.Hand.Add(drawnCard);
-            drawnCard.State = RuntimeCard.CardState.InHand;
+            drawnCard.SetState(RuntimeCard.CardState.InHand);
             //debug
             string cardId = drawnCard.StaticCard.CardId;
             Debug.Log($"Side {_drawingSideIndex} drew: {cardId}. Hand size: {drawingSide.Hand.Count}");
