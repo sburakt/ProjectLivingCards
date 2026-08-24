@@ -115,7 +115,7 @@ namespace TCG.Model.Core
             Debug.Log("Initialized Match");
             Debug.Log($"deck size is {_sides[0].Deck.Count}");
             Debug.Log(_sides[0].Deck[0].BaseDefense);
-            ChangePhase(DrawPhase.Instance);
+            ChangePhase(SetupPhase.Instance);
         }
 
         public void Resolve()
