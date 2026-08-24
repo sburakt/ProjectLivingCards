@@ -1,10 +1,15 @@
+using System.Collections.Generic;
+using TCG.Model.Cards;
 using TCG.Model.Core;
+using TCG.Model.Effects;
+using TCG.View;
 
 namespace TCG.Presenter
 {
     public class MatchPresenter
     {
         private readonly Match _match;
+        private readonly MatchView _view;
         private readonly GameInitializer _gameInitializer;
 
         public MatchPresenter(Match match, GameInitializer gameInitializer)
@@ -23,17 +28,98 @@ namespace TCG.Presenter
         private void ContinueMatch()
         {
             _match.Resolve();
-            _gameInitializer.ShowState(_match.GetStringState());
             _gameInitializer.ShowOutput(_match.ConsumeInputRequest());
-            _gameInitializer.ShowMoves(_match.GetLegalMoves());
             AddAllLogsFromQueue();
-            
         }
 
         private void HandleUserInput(PlayerMove move)
         {
             _match.ReceiveMove(move);
             ContinueMatch();
+        }
+        
+        // display Data Build
+
+        public GameDisplayData BuildGameDisplayData()
+        {
+            SideDisplayData[] sideDisplayData = new SideDisplayData[2];
+            sideDisplayData[0] = BuildSideDisplayData(0);
+            sideDisplayData[1] = BuildSideDisplayData(1);
+            GameDisplayData gameDisplayData = new GameDisplayData()
+            {
+                Sides = sideDisplayData,
+                ActiveSideIndex = _match.ActiveSideIndex,
+                EventLog = new List<string>(), //emoty for now test only
+                LegalMoves = _match.GetLegalMoves(),
+            };
+            return gameDisplayData;
+        }
+
+        private SideDisplayData BuildSideDisplayData(int sideIndex)
+        {
+            Side side = _match.Sides[sideIndex];
+            int lifePoints = side.LifePoints;
+            List<CardDisplayData> hand = new List<CardDisplayData>();
+            CardDisplayData[] field = new CardDisplayData[6];
+            foreach (RuntimeCard card  in side.Hand)
+            {
+                hand.Add(BuildCardDisplayData(card));
+            }
+            int i = 0;
+            foreach (RuntimeCard card in side.GetCardSlotsInField())
+            {
+                if (card is null)
+                    field[i] = null;
+                else
+                    field[i] = BuildCardDisplayData(card);
+
+                i++;
+            }
+            SideDisplayData sideDisplayData = new SideDisplayData()
+            {
+                LifePoints = side.LifePoints,
+                Hand = hand,
+                Field = field
+            };
+            return sideDisplayData;
+        }
+
+        private CardDisplayData BuildCardDisplayData(RuntimeCard runtimeCard)
+        {
+            CardDisplayData cardDisplayData = new CardDisplayData()
+            {
+                InstanceId = runtimeCard.InstanceId,
+                CardName = runtimeCard.StaticCard.CardId,
+                Attack = runtimeCard.CalculateStat(_match, RuntimeCard.StatType.Attack),
+                BaseHealth = runtimeCard.BaseHealth,
+                CurrentHealth = runtimeCard.CurrentHealth,
+                Buffs = BuildBuffDisplayData(runtimeCard)
+            };
+            return cardDisplayData;
+        }
+
+        private List<BuffDisplayData> BuildBuffDisplayData(RuntimeCard runtimeCard)
+        {
+            List<BuffDisplayData> buffDisplayDatas = new List<BuffDisplayData>();
+            int buffId;
+            int? buffStack;
+            foreach (Effect effect in _match.EffectList)
+            {
+                if (effect is IBuff buff)
+                {
+                    if (buff.TargetInstanceId == runtimeCard.InstanceId)
+                    {
+                        buffId = buff.BuffId;
+                        buffStack = buff.Stack;
+                        buffDisplayDatas.Add(new BuffDisplayData()
+                        {
+                            BuffId = buffId,
+                            StackCount = buffStack
+                        });
+                    }
+                }
+            }
+            return buffDisplayDatas;
         }
 
         // test only
@@ -42,46 +128,7 @@ namespace TCG.Presenter
             while (_match.EventLog.TryDequeue(out var matchEvent))
             {
                 _gameInitializer.AddLog(matchEvent.ToString());
-
             }
         }
-        
-        // test  only
-        private PlayerMove ParseMove(string input, Match match)
-        {
-            string[] parts = input.Split('_');
-            if (input.ToLower() == "end")
-            {
-                return new EndTurnMove(match.ActiveSideIndex);
-            }
-            if (parts.Length == 4 && parts[0].ToLower() == "play")
-            {
-                if (!int.TryParse(parts[1], out int instanceId))
-                {
-                    match.RequestInput("InstanceID is invalid");
-                    return null;
-                }
-                if (!int.TryParse(parts[2], out int laneIndex))
-                {
-                    match.RequestInput("laneIndex is invalid");
-                    return null;
-                }
-                if (laneIndex > 2 || laneIndex < 0)
-                {
-                    match.RequestInput("laneIndex is invalid must be between 0 and 2");
-                    return null;
-                }
-                bool playToFront = parts[3].ToLower() == "front";
-                Position position = new Position()
-                {
-                    SideIndex = match.ActiveSideIndex,
-                    LaneIndex = laneIndex,
-                    IsFront = playToFront
-                };
-                return new PlayCardMove(_match.ActiveSideIndex, instanceId, position);
-            }
-            return null;
-        }
-        
     }
 }
