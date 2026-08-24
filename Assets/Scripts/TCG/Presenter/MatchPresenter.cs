@@ -9,14 +9,14 @@ namespace TCG.Presenter
     public class MatchPresenter
     {
         private readonly Match _match;
+        //private readonly MatchView _view;
         private readonly MatchView _view;
-        private readonly GameInitializer _gameInitializer;
 
-        public MatchPresenter(Match match, GameInitializer gameInitializer)
+        public MatchPresenter(Match match, MatchView view)
         {
             _match = match;
-            _gameInitializer = gameInitializer;
-            _gameInitializer.OnInputSubmitted += HandlePlayerInput;
+            _view = view;
+            _view.OnInputSubmitted += HandlePlayerInput;
         }
 
         public void StartMatch()
@@ -28,9 +28,9 @@ namespace TCG.Presenter
         private void ContinueMatch()
         {
             InputRequest inputRequest = _match.Resolve();
-            _gameInitializer.ShowOutput(inputRequest.DisplayMessage);
-            _gameInitializer.ShowMoves(inputRequest.LegalMoves);
-            _gameInitializer.ShowState(_match.GetStringState());
+            _view.ShowOutput(inputRequest.DisplayMessage);
+            _view.ShowMoves(inputRequest.LegalMoves);
+            _view.ShowState(_match.GetStringState());
             // where we really build display data and log and pass to view in future
             AddAllLogsFromQueue(); // test only
         }
@@ -130,7 +130,7 @@ namespace TCG.Presenter
         {
             while (_match.EventLog.TryDequeue(out var matchEvent))
             {
-                _gameInitializer.AddLog(matchEvent.ToString());
+                _view.AddLog(matchEvent.ToString());
             }
         }
     }
