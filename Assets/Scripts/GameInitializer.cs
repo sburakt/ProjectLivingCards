@@ -30,7 +30,7 @@ public class GameInitializer : MonoBehaviour
         Initialize();
     }
 
-    public Action<PlayerMove> OnMoveSubmitted;
+    public Action<PlayerInput> OnInputSubmitted;
     public void Initialize()
     {
         // get deck json create static cards
@@ -58,12 +58,13 @@ public class GameInitializer : MonoBehaviour
 
     public void ShowMoves(List<PlayerMove> moves)
     {
-        foreach (PlayerMove move in moves)
+        for (int i = 0; i < moves.Count; i++)
         {
-            PlayerMove captured = move;
+            PlayerMove move = moves[i];
+            int index = i;
             Button btn = Instantiate(_buttonPrefab, _moveButtonContainer);
             btn.GetComponentInChildren<Text>().text = move.ToDisplayString();
-            btn.onClick.AddListener(() => SendMove(captured));
+            btn.onClick.AddListener(() => SendInput(new PlayerInput(index)));
         }
     }
     
@@ -80,7 +81,7 @@ public class GameInitializer : MonoBehaviour
         _isWaitingForInput = true;
     }
 
-    private void SendMove(PlayerMove move)
+    private void SendInput(PlayerInput input)
     {
         if (_isWaitingForInput)
         {
@@ -89,7 +90,7 @@ public class GameInitializer : MonoBehaviour
             {
                 Destroy(child.gameObject);
             }
-            OnMoveSubmitted?.Invoke(move);
+            OnInputSubmitted?.Invoke(input);
         }
     }
 

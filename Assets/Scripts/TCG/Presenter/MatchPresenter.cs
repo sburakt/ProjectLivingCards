@@ -16,7 +16,7 @@ namespace TCG.Presenter
         {
             _match = match;
             _gameInitializer = gameInitializer;
-            _gameInitializer.OnMoveSubmitted += HandleUserInput;
+            _gameInitializer.OnInputSubmitted += HandlePlayerInput;
         }
 
         public void StartMatch()
@@ -27,14 +27,17 @@ namespace TCG.Presenter
 
         private void ContinueMatch()
         {
-            _match.Resolve();
-            _gameInitializer.ShowOutput(_match.ConsumeInputRequest());
-            AddAllLogsFromQueue();
+            InputRequest inputRequest = _match.Resolve();
+            _gameInitializer.ShowOutput(inputRequest.DisplayMessage);
+            _gameInitializer.ShowMoves(inputRequest.LegalMoves);
+            _gameInitializer.ShowState(_match.GetStringState());
+            // where we really build display data and log and pass to view in future
+            AddAllLogsFromQueue(); // test only
         }
 
-        private void HandleUserInput(PlayerMove move)
+        private void HandlePlayerInput(PlayerInput playerInput)
         {
-            _match.ReceiveMove(move);
+            _match.ReceiveInput(playerInput);
             ContinueMatch();
         }
         
@@ -49,8 +52,8 @@ namespace TCG.Presenter
             {
                 Sides = sideDisplayData,
                 ActiveSideIndex = _match.ActiveSideIndex,
-                EventLog = new List<string>(), //emoty for now test only
-                LegalMoves = _match.GetLegalMoves(),
+                EventLog = new List<string>(), //empty for now test only
+                //LegalMoves = _match.GetLegalMoves(),
             };
             return gameDisplayData;
         }

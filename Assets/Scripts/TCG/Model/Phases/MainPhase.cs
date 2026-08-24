@@ -23,9 +23,10 @@ namespace TCG.Model.Phases
         public override void Execute(Match match)
         {
             PlayerMove move = match.ConsumeMove();
+            
             if (move == null)
             {
-                match.RequestInput($"Waiting for Main Phase to move from player{match.ActiveSideIndex}");
+                match.RequestInput(BuildInputRequest(match));
                 return;
             }
             if (move is PlayCardMove playCardMove)
@@ -41,7 +42,17 @@ namespace TCG.Model.Phases
             //if (move is ActivateEffectMove activateEffectMove) {}
         }
 
-        public override List<PlayerMove> GetLegalMoves(Match match)
+        private InputRequest BuildInputRequest(Match match)
+        {
+            InputRequest inputRequest = new InputRequest()
+            {
+                DisplayMessage = "Main Phase Input",
+                LegalMoves = GetLegalMoves(match)
+            };
+            return inputRequest;
+        }
+        
+        private List<PlayerMove> GetLegalMoves(Match match)
         {
             List<PlayerMove> moves = new List<PlayerMove>();
             // normal summon from hand
@@ -97,8 +108,10 @@ namespace TCG.Model.Phases
             {
                 // Validation failed! 
                 // Send the error to the UI/Console queue
-                match.RequestInput($"Instance ID {instanceId} is not found in your hand. there are {activeSide.Hand.Count}" +
-                                   $"\n cards in your hand. {string.Join(", ", activeSide.Hand.Select(p => p.InstanceId))}" );
+               
+                //match.RequestStringInput($"Instance ID {instanceId} is not found in your hand. there are {activeSide.Hand.Count}" + $"\n cards in your hand. {string.Join(", ", activeSide.Hand.Select(p => p.InstanceId))}" );
+                
+                // just fizzle instead
                 return;
             }
             // 2. Validation passed! Pass the execution down to the mechanic.

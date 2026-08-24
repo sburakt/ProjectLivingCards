@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TCG.Model.Cards;
 using TCG.Model.Effects;
@@ -53,45 +54,42 @@ namespace TCG.Model.Core
             _effects.RemoveAll(effect => effect.ShouldTerminate(this));
         }
 
-        // test variables (temp)
-        //public Queue<string> OutputQueue { get; } = new Queue<string>();
-        
-        private string _pendingInputRequest;
-        
-        public void RequestInput(string output) 
+        private string _pendingStringInputRequest;
+        private InputRequest _pendingInputRequest;
+
+        public void RequestInput(InputRequest inputRequest)
         {
-            _pendingInputRequest = output;
+            if (_pendingInputRequest != null)
+            {
+                Debug.Log($"Requesting input request: {inputRequest.DisplayMessage} but pending input request: {_pendingInputRequest.DisplayMessage} is not resolved" );
+            }
+            _pendingInputRequest = inputRequest;
         }
 
-        public string ConsumeInputRequest()
-        {
-            string temp = _pendingInputRequest;
-            _pendingInputRequest = null;
-            return temp;
-        }
-
-        public string PendingInput { get; private set; }
+        // we get the move out of input right away
+        // but might change it if input with no moves will be needed for very spesific effects in future
+        //public PlayerInput PendingInput { get; private set; }
+        
         private PlayerMove _pendingMove;
 
-        public void ReceiveMove(PlayerMove move)
+        public void ReceiveInput(PlayerInput input)
         {
-            _pendingMove = move;
+            if (_pendingInputRequest is null)
+                throw new InvalidOperationException("No input is requested.");
+
+            if (input.OptionIndex < 0 || input.OptionIndex >= _pendingInputRequest.LegalMoves.Count)
+                throw new ArgumentOutOfRangeException(nameof(input.OptionIndex));
+
+            _pendingMove = _pendingInputRequest.LegalMoves[input.OptionIndex];
+            _pendingInputRequest = null;
         }
+
 
         public PlayerMove ConsumeMove()
         {
             PlayerMove temp = _pendingMove;
             _pendingMove = null;
             return temp;
-        }
-        
-        public enum TurnState
-        {
-            Draw,
-            Main1,
-            Battle,
-            Main2,
-            End
         }
 
         public Match(Player p1, Player p2)
@@ -100,7 +98,6 @@ namespace TCG.Model.Core
             _players[1] = p2;
             _sides[0] = new Side(0);
             _sides[1] = new Side(1);
-            //InitializeMatch();
         }
 
 
@@ -118,23 +115,25 @@ namespace TCG.Model.Core
             ChangePhase(SetupPhase.Instance);
         }
 
-        public void Resolve()
+        public InputRequest Resolve()
         {
             while (!_matchOver)
             {
                 // if we asked for an input we must wait for it priority 1
-                if (_pendingInputRequest is not null) // for now we use output queue i know it shouldnt excide 1 but that what we already have in hand and we use this for now
+                if (_pendingInputRequest is not null)
                 {
-                    break;
+                    return _pendingInputRequest;
                 }
                 Tick();
             }
+            // match over not implemented yet 
+            return null;
         }
 
         private void Tick()
         {
                 // before phase execution we must see if stack empty
-            if (_actionStack.Count > 0) // no internak while loop 
+            if (_actionStack.Count > 0)
             {
                 _actionStack.Pop().Execute(this);
             }
@@ -160,21 +159,30 @@ namespace TCG.Model.Core
             }
         }
 
-        public List<PlayerMove> GetLegalMoves()
+        public void PassTurn()
         {
-            List<PlayerMove> moves = new List<PlayerMove>();
-            
-            moves.AddRange(_currentPhase.GetLegalMoves(this));
-
-            // TODO refactor once input/move required effects are added and finalized
-            foreach (Effect effect in _effects)
-            {
-                // if (effect is IActivatableEffect activatable && activatable.CanActivate(this))
-                   // moves.AddRange(activatable.GetActivationCommands(this));
-            }
-            return moves;
+            Debug.Log("Passing turn");
+            ActiveSideIndex = ActiveSideIndex ^ 1;
+            ChangePhase(DrawPhase.Instance);
+            _turnCount++;
         }
 
+        public void AdvancePhase()
+        {
+            // Get the next phase from the current state
+            TurnPhase nextPhase = _currentPhase.GetNextPhase();
+
+            // Use ChangePhase to ensure Exit() and Enter() run!
+            ChangePhase(nextPhase);
+        }
+
+        private void ChangePhase(TurnPhase newPhase)
+        {
+            _currentPhase?.Exit(this);
+            _currentPhase = newPhase;
+            _currentPhase?.Enter(this);
+        }
+                
         // for test only
         public string GetStringState()
         {
@@ -206,6 +214,8 @@ namespace TCG.Model.Core
             return state;
         }
 
+        // might be improved or moved out of match class
+
         public RuntimeCard FindRuntimeCardById(int targetId, int expectedSideHint = 0)
         {
             RuntimeCard fastResult = Sides[expectedSideHint].FindRuntimeCardById(targetId);
@@ -217,32 +227,6 @@ namespace TCG.Model.Core
             // If it's truly gone, return null to fizzle the action safely
             return null;
         }
-
-        public void PassTurn()
-        {
-            Debug.Log("Passing turn");
-            ActiveSideIndex = ActiveSideIndex ^ 1;
-            ChangePhase(DrawPhase.Instance);
-            _turnCount++;
-        }
-
-        public void AdvancePhase()
-        {
-            // Get the next phase from the current state
-            TurnPhase nextPhase = _currentPhase.GetNextPhase();
-
-            // Use ChangePhase to ensure Exit() and Enter() run!
-            ChangePhase(nextPhase);
-        }
-
-        private void ChangePhase(TurnPhase newPhase)
-        {
-            _currentPhase?.Exit(this);
-            _currentPhase = newPhase;
-            _currentPhase?.Enter(this);
-        }
-
-        // might be improved or moved out
         private List<RuntimeCard> CreateRuntimeCards(List<PersistentCard> persistentCards, Side side)
         {
             List<RuntimeCard> runtimeCards = new();

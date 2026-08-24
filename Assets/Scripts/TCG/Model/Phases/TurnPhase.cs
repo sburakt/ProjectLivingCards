@@ -20,12 +20,6 @@ namespace TCG.Model.Phases
         public virtual void Exit(Match match)
         {
         }
-
-        //moves can be made only in main phase but if changes in the future it may be hard to implement without per phase legal move method
-        public virtual List<PlayerMove> GetLegalMoves(Match match)
-        {
-            return new List<PlayerMove>();
-        }
         
         // public virtual void ReceiveInput(string input)
         // {
