@@ -93,5 +93,4 @@ public class GameInitializer : MonoBehaviour
         }
     }
 
-    //public void Update(){}
 }
