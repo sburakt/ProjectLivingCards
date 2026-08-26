@@ -117,17 +117,14 @@ namespace TCG.Model.Core
 
         public InputRequest Resolve()
         {
-            while (!_matchOver)
+            // safety check
+            if (_pendingInputRequest is not null)
             {
-                // if we asked for an input we must wait for it priority 1
-                if (_pendingInputRequest is not null)
-                {
-                    return _pendingInputRequest;
-                }
-                Tick();
+                Debug.LogWarning("Resolve() called with pending input request — input not yet received.");
+                return _pendingInputRequest;
             }
-            // match over not implemented yet 
-            return null;
+            Tick();
+            return _pendingInputRequest;
         }
 
         private void Tick()

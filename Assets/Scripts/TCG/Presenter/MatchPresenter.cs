@@ -29,13 +29,20 @@ namespace TCG.Presenter
 
         private void ContinueMatch()
         {
-            InputRequest inputRequest = _match.Resolve();
+            InputRequest inputRequest = null;
+            do // while (inputRequest is null) ftr: i hate do whiles but i had to use it here 
+            {
+                inputRequest = _match.Resolve();
+                if (inputRequest is not null)
+                {
+                    // tick record
+                }
+            }
+            while (inputRequest is null);
+            // this part bellow runs when inputRequest no longer null
             _view.ShowOutput(inputRequest.DisplayMessage);
             _view.ShowMoves(inputRequest.LegalMoves);
-            //_view.ShowState(_match.GetStringState());
             _view.DisplayGameDisplay(BuildGameDisplayData(inputRequest));
-            // where we really build display data and log and pass to view in future
-            AddAllLogsFromQueue(); // test only
         }
 
         private void HandlePlayerInput(PlayerInput playerInput)
