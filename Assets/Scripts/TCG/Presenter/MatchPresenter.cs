@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using TCG.Model.Cards;
 using TCG.Model.Core;
 using TCG.Model.Effects;
+using TCG.Model.Events;
 using TCG.View;
+using UnityEngine;
 
 namespace TCG.Presenter
 {
@@ -30,7 +32,8 @@ namespace TCG.Presenter
             InputRequest inputRequest = _match.Resolve();
             _view.ShowOutput(inputRequest.DisplayMessage);
             _view.ShowMoves(inputRequest.LegalMoves);
-            _view.ShowState(_match.GetStringState());
+            //_view.ShowState(_match.GetStringState());
+            _view.DisplayGameDisplay(BuildGameDisplayData(inputRequest));
             // where we really build display data and log and pass to view in future
             AddAllLogsFromQueue(); // test only
         }
@@ -43,17 +46,22 @@ namespace TCG.Presenter
         
         // display Data Build
 
-        public GameDisplayData BuildGameDisplayData()
+        public GameDisplayData BuildGameDisplayData(InputRequest inputRequest)
         {
             SideDisplayData[] sideDisplayData = new SideDisplayData[2];
             sideDisplayData[0] = BuildSideDisplayData(0);
             sideDisplayData[1] = BuildSideDisplayData(1);
+            List<MatchEvent> eventLog = new List<MatchEvent>();
+            while (_match.EventLog.TryDequeue(out var matchEvent))
+            {
+                eventLog.Add(matchEvent);
+            }
             GameDisplayData gameDisplayData = new GameDisplayData()
             {
                 Sides = sideDisplayData,
                 ActiveSideIndex = _match.ActiveSideIndex,
-                EventLog = new List<string>(), //empty for now test only
-                //LegalMoves = _match.GetLegalMoves(),
+                EventLog = eventLog,
+                //LegalMoves = inputRequest.LegalMoves,
             };
             return gameDisplayData;
         }

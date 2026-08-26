@@ -1,19 +1,39 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.XR;
 
 namespace TCG.View
 {
     public class HandDisplay : MonoBehaviour
     {
-        void Start()
+        [SerializeField] private CardDisplay cardDisplay;
+        HashSet<int> _inHandIds = new HashSet<int>();
+        private List<CardDisplay> _cardDisplays = new List<CardDisplay>();
+        
+        public void Display(List<CardDisplayData> cards)
         {
-
+            ClearDisplay(cards); 
+            foreach (CardDisplayData cardDisplayData in cards)
+            {
+                if (_inHandIds.Add(cardDisplayData.InstanceId))
+                {
+                    Instantiate(cardDisplay, gameObject.transform).Display(cardDisplayData);
+                }                
+            }    
         }
 
-        void Update()
+        //Clear all card in _cardDisplays that are not in the cards
+        public void ClearDisplay(List<CardDisplayData> cards)
         {
-
+            foreach (CardDisplay cardDisplay in _cardDisplays)
+            {
+                if (!_inHandIds.Contains(cardDisplay.CardDisplayData.InstanceId))
+                {
+                    Destroy(cardDisplay.gameObject);
+                }
+            }
         }
     }
 }

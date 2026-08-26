@@ -2,28 +2,29 @@ using System;
 using System.Collections.Generic;
 using TCG.Model.Core;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace TCG.View
 {
     public class MatchView : MonoBehaviour
     {
-        [SerializeField] private Text _text;
-        [SerializeField] private Text _StateText;
-        [SerializeField] private Text _logs;
-        [SerializeField] private Transform _moveButtonContainer;
-        [SerializeField] private Button _buttonPrefab;
+        [FormerlySerializedAs("_text")] [SerializeField] private Text text;
+        [FormerlySerializedAs("_StateText")] [SerializeField] private Text stateText;
+        [FormerlySerializedAs("_logs")] [SerializeField] private Text logs;
+        [FormerlySerializedAs("_moveButtonContainer")] [SerializeField] private Transform moveButtonContainer;
+        [FormerlySerializedAs("_buttonPrefab")] [SerializeField] private Button buttonPrefab;
         
         public Action<PlayerInput> OnInputSubmitted;
         private List<PlayerMove> _moves;
         private bool _isWaitingForInput = false;
         
         
-        [SerializeField] private HandDisplay handDisplay;
+        [SerializeField] private GameDisplay gameDisplay;
         
         public void ShowState(string state)
         {
-            _StateText.text = state;
+            stateText.text = state;
         }
 
         public void ShowMoves(List<PlayerMove> moves)
@@ -32,7 +33,7 @@ namespace TCG.View
             {
                 PlayerMove move = moves[i];
                 int index = i;
-                Button btn = Instantiate(_buttonPrefab, _moveButtonContainer);
+                Button btn = Instantiate(buttonPrefab, moveButtonContainer);
                 btn.GetComponentInChildren<Text>().text = move.ToDisplayString();
                 btn.onClick.AddListener(() => SendInput(new PlayerInput(index)));
             }
@@ -40,12 +41,18 @@ namespace TCG.View
     
         public void AddLog(string log)
         {
-            _logs.text += "\n" +log;
+            logs.text += "\n" +log;
+        }
+
+        public void DisplayGameDisplay(GameDisplayData gameDisplayData)
+        {
+            gameDisplay.Display(gameDisplayData);
+            //gameDisplayData.LegalMoves
         }
 
         public void ShowOutput(string output)
         {
-            _text.text = output;
+            text.text = output;
             _isWaitingForInput = true;
         }
 
@@ -54,7 +61,7 @@ namespace TCG.View
             if (_isWaitingForInput)
             {
                 _isWaitingForInput = false;
-                foreach (Transform child in _moveButtonContainer)
+                foreach (Transform child in moveButtonContainer)
                 {
                     Destroy(child.gameObject);
                 }

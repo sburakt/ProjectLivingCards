@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TCG.Model.Events;
 
 namespace TCG
 {
@@ -29,7 +30,7 @@ namespace TCG
     {
         public SideDisplayData[] Sides;
         public int ActiveSideIndex;
-        public List<string> EventLog;
+        public List<MatchEvent> EventLog;
         public List<PlayerMove> LegalMoves;
     }
 }
