@@ -11,7 +11,6 @@ namespace TCG.Presenter
     public class MatchPresenter
     {
         private readonly Match _match;
-        //private readonly MatchView _view;
         private readonly MatchView _view;
 
         public MatchPresenter(Match match, MatchView view)
@@ -30,17 +29,18 @@ namespace TCG.Presenter
         private void ContinueMatch()
         {
             InputRequest inputRequest = null;
-            do // while (inputRequest is null) ftr: i hate do whiles but i had to use it here 
+            do // do-while (inputRequest is null) ftr: i hate do whiles but i had to use it here 
             {
                 inputRequest = _match.Resolve();
                 if (inputRequest is not null)
                 {
-                    // tick record
+                    //record add new record snapshot + events
+                    // keep in json for save if user quits mid match maybe
                 }
             }
             while (inputRequest is null);
-            // this part bellow runs when inputRequest no longer null
-            _view.ShowOutput(inputRequest.DisplayMessage);
+            // this part bellow runs when inputRequest is no longer null
+            _view.ShowOutput(inputRequest.DisplayMessage); 
             _view.ShowMoves(inputRequest.LegalMoves);
             _view.DisplayGameDisplay(BuildGameDisplayData(inputRequest));
         }

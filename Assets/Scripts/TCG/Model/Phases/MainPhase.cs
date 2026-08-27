@@ -58,8 +58,9 @@ namespace TCG.Model.Phases
             // normal summon from hand
             foreach (RuntimeCard card in match.ActiveSide.Hand)
             {
-                foreach (Position position in match.ActiveSide.GetPositions())
-                {                    
+                foreach (Cell cell in match.ActiveSide.Field.GetCells())
+                {   
+                    Position position = cell.Position;
                     int cardId = card.InstanceId;
                     CanSummonToPosition(match,cardId, position);
                     moves.Add(new PlayCardMove(match.ActiveSideIndex, cardId, position));
@@ -83,7 +84,7 @@ namespace TCG.Model.Phases
                 return false;
             Lane summonLane = match.Sides[position.SideIndex].Field.Lanes[position.LaneIndex];
             // if lane is full cannot summon 
-            if(summonLane.IsFull())
+            if(summonLane.IsFull)
                 return false;
             return true;
         }

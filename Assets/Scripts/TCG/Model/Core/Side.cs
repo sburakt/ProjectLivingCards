@@ -16,7 +16,7 @@ namespace TCG.Model.Core
         {
             SideIndex = sideIndex;
             LifePoints = 40;
-            Field = new Field();
+            Field = new Field(sideIndex);
             Deck = new List<RuntimeCard>();
             Hand = new List<RuntimeCard>();
             Graveyard = new List<RuntimeCard>();
@@ -45,17 +45,17 @@ namespace TCG.Model.Core
             }
         }
         
-        public IEnumerable<Position> GetPositions()
-        {
-            for (int i = 0; i < Field.Lanes.Length; i++)
-            {
-                if (!Field.Lanes[i].IsFull())
-                {
-                    yield return new Position { SideIndex = SideIndex, LaneIndex = i, IsFront = true };
-                    yield return new Position { SideIndex = SideIndex, LaneIndex = i, IsFront = false };
-                }
-            }
-        }
+        //public IEnumerable<Position> GetPositions()
+        //{
+        //    for (int i = 0; i < Field.Lanes.Length; i++)
+        //    {
+        //        if (!Field.Lanes[i].IsFull())
+        //        {
+        //            yield return new Position { SideIndex = SideIndex, LaneIndex = i, IsFront = true };
+        //            yield return new Position { SideIndex = SideIndex, LaneIndex = i, IsFront = false };
+        //        }
+        //    }
+        //}
         
         
         public RuntimeCard FindRuntimeCardById(int instanceId)

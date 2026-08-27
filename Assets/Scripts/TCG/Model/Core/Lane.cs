@@ -4,18 +4,29 @@ namespace TCG.Model.Core
 {
     public class Lane
     {
-        public int Number { get; private set; }
-        public RuntimeCard FrontCard { get; set; }
-        public RuntimeCard BackCard { get; set; }
+        public int Index { get; private set; }
 
-        public Lane(int number)
+        public readonly Cell FrontCell;
+        public readonly Cell BackCell;
+
+        // delete FrontCard and BackCard once usage is 0
+        public RuntimeCard FrontCard
         {
-            Number = number;
+            get => FrontCell.Card;
+            set => FrontCell.SetCard(value); 
         }
-
-        public bool IsFull()
+        public RuntimeCard BackCard
         {
-            return FrontCard != null && BackCard != null;
+            get => BackCell.Card;
+            set => BackCell.SetCard(value); 
+        }
+        public bool IsFull => FrontCell.IsFull && BackCell.IsFull;
+
+        public Lane(int index, Cell frontCell, Cell backCell)
+        {
+            Index = index;
+            FrontCell = frontCell;
+            BackCell = backCell;
         }
     }
 }

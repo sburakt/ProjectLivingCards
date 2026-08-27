@@ -179,6 +179,14 @@ namespace TCG.Model.Core
             _currentPhase = newPhase;
             _currentPhase?.Enter(this);
         }
+
+        public Cell GetCell(Position position)
+        {
+            Cell cell = position.IsFront ?
+                _sides[position.SideIndex].Field.Lanes[position.LaneIndex].FrontCell:
+                _sides[position.SideIndex].Field.Lanes[position.LaneIndex].BackCell;
+            return cell;
+        }
                 
         // for test only
         public string GetStringState()
