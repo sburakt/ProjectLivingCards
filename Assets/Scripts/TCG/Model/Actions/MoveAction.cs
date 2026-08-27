@@ -8,60 +8,51 @@ namespace TCG.Model.Actions
     public class MoveCardAction : MatchAction
     {
         private readonly int _cardId;
-        private readonly int _targetSideIndex;
-        private readonly int _targetLaneIndex;
-        private readonly bool _toFront;
+        private readonly Position _targetPosition;
 
         public MoveCardAction(int cardId, int targetSideIndex, int targetLaneIndex, bool toFront)
         {
             _cardId = cardId;
-            _targetSideIndex = targetSideIndex;
-            _targetLaneIndex = targetLaneIndex;
-            _toFront = toFront;
+            _targetPosition = new Position()
+            {
+                SideIndex = targetSideIndex,
+                LaneIndex = targetLaneIndex,
+                IsFront = toFront
+            };
+        }
+
+        public MoveCardAction(int cardId, Position targetPosition)
+        {
+            _cardId = cardId;
+            _targetPosition = targetPosition;
         }
 
         public override void Execute(Match match)
         {
             RuntimeCard card = match.FindRuntimeCardById(_cardId);
+            // fizzle check card must be on the field for MoveACtion
             if (card == null || card.State != RuntimeCard.CardState.OnBoard) 
                 return;
 
-            Side side = match.Sides[card.Position.SideIndex];
-            Lane oldLane = side.Field.Lanes[card.Position.LaneIndex];
-            Lane newLane = match.Sides[_targetSideIndex].Field.Lanes[_targetLaneIndex];
-
-            RuntimeCard targetPlaceCard = _toFront? newLane.FrontCard : newLane.BackCard; 
+            Cell currentCell = match.GetCell(card.Position);
+            Cell targetCell = match.GetCell(_targetPosition);
             
-            // fizle check
-            if (targetPlaceCard != null)
+            // fizzle check card must move to an already empty cell
+            if (targetCell.IsFull)
                 return;
-
+            // todo if this patter remove set update repeat i should make non action card moving in to match like match.MoveCard(..
+            currentCell.RemoveCard();
+            targetCell.SetCard(card);
+            card.SetPosition(_targetPosition);
             
-            if (card.Position.IsFront)
-                oldLane.FrontCard = null;
-            else
-                oldLane.BackCard = null;
-
-            
-            if (_toFront)
-                newLane.FrontCard = card;
-            else
-                newLane.BackCard = card;
-
-            card.SetPosition(new Position()
-            {
-                SideIndex = card.Position.SideIndex,
-                LaneIndex = _targetLaneIndex,
-                IsFront = _toFront
-            });
-
+            // Event
             match.EnqueueEvent(new MatchEvent
             {
                 Type = MatchEventType.CardMoved,
                 TargetId = _cardId
             });
             
-            Debug.Log($"ACTION: Moved Card {_cardId} to Lane {_targetLaneIndex} ({(_toFront ? "Front" : "Back")})");
+            Debug.Log($"ACTION: Moved Card {_cardId} to Lane {_targetPosition.LaneIndex} ({(_targetPosition.IsFront ? "Front" : "Back")})");
         }
     }
 }
