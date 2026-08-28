@@ -116,7 +116,7 @@ namespace TCG.Model.Phases
                 return;
             }
             // 2. Validation passed! Pass the execution down to the mechanic.
-            match.PushAction( new NormalSummonAction(match.ActiveSideIndex, instanceId, position.LaneIndex, position.IsFront));
+            match.PushAction( new NormalSummonAction(match.ActiveSideIndex, instanceId, position));
         }
     }
 }

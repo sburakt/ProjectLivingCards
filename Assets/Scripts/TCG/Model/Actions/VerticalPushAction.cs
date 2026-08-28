@@ -3,6 +3,12 @@ using TCG.Model.Core;
 
 namespace TCG.Model.Actions
 {
+    // push targets card ID not cell
+    // edge case if an effect moves the pushed card to a different lane
+    // before this action resolves push follows the card across lanes
+    // this requires a very specific chain and is acceptable at current scope
+    // revisit if a card mechanic exploits this
+    // or add cell based vertical push only for cascade effects
     public class VerticalPushAction : MatchAction
     {
         private readonly int _pusherCardId;
@@ -21,7 +27,12 @@ namespace TCG.Model.Actions
         {
             RuntimeCard pushedCard = match.FindRuntimeCardById(_pushedCardId);
             Position beforePushPosition = pushedCard.Position;
-            Cell beforePushCell = match.GetCell(beforePushPosition);
+            
+            //fizzle check
+            if (pushedCard.State != RuntimeCard.CardState.OnBoard)
+            {
+                return;
+            }
             
             if (_direction == VerticalPushDirection.Front)
             {
@@ -84,6 +95,12 @@ namespace TCG.Model.Actions
                     }
                 }
             }
+            // TODO: cascade push uses _pushedCardId as pusher for visual continuity
+            // but _pusherCardId should be for gameplay logic
+            // for "when this card pushes another card out" effects
+            // view will need both: VisualPusher the physically moving card
+            // and LogicalPusher the original initiator
+
             //Event
             // todo emit events
         }

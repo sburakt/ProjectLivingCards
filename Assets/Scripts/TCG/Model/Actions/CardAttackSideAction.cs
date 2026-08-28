@@ -59,6 +59,7 @@ namespace TCG.Model.Actions
                 // You would trigger your match-ending logic here in the future
                 // match.TriggerGameOver(winner: attackerSide);
             }
+            // event
             match.EnqueueEvent(new MatchEvent()
             {
                 Type = MatchEventType.CardAttackSide,

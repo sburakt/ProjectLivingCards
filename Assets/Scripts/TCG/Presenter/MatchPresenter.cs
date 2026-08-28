@@ -4,7 +4,6 @@ using TCG.Model.Core;
 using TCG.Model.Effects;
 using TCG.Model.Events;
 using TCG.View;
-using UnityEngine;
 
 namespace TCG.Presenter
 {
@@ -29,19 +28,15 @@ namespace TCG.Presenter
         private void ContinueMatch()
         {
             InputRequest inputRequest = null;
-            do // do-while (inputRequest is null) ftr: i hate do whiles but i had to use it here 
+            do // do-while (inputRequest is null)
             {
                 inputRequest = _match.Resolve();
-                if (inputRequest is not null)
-                {
-                    //record add new record snapshot + events
-                    // keep in json for save if user quits mid match maybe
-                }
-            }
-            while (inputRequest is null);
+                // record each turn snapshot here
+            } while (inputRequest is null);
             // this part bellow runs when inputRequest is no longer null
             _view.ShowOutput(inputRequest.DisplayMessage); 
             _view.ShowMoves(inputRequest.LegalMoves);
+            _view.ShowState(_match.GetStringState());
             _view.DisplayGameDisplay(BuildGameDisplayData(inputRequest));
         }
 

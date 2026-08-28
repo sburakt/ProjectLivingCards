@@ -27,9 +27,9 @@ namespace TCG.Model.Actions
 
             //Fizzle checks
 
-            // check if any card is null
+            // check if any card not on board
             
-            if (attackerCard == null || defenderCard == null)
+            if (attackerCard.State != RuntimeCard.CardState.OnBoard || defenderCard.State != RuntimeCard.CardState.OnBoard)
                 return;
 
             // check if attacker card is on the attacker field

@@ -21,6 +21,7 @@ namespace TCG.Model.Core
             set => BackCell.SetCard(value); 
         }
         public bool IsFull => FrontCell.IsFull && BackCell.IsFull;
+        public bool IsEmpty => FrontCell.IsEmpty && BackCell.IsEmpty;
 
         public Lane(int index, Cell frontCell, Cell backCell)
         {
