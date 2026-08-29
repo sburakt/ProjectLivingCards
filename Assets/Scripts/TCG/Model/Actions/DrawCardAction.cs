@@ -38,9 +38,9 @@ namespace TCG.Model.Actions
             Debug.Log($"Side {_drawingSideIndex} drew: {cardId}. Hand size: {drawingSide.Hand.Count}");
             match.EnqueueEvent(new MatchEvent()
             {
-                Type = MatchEventType.CardDrawn,
-                SourceId = _drawingSideIndex,
-                TargetId = drawnCard.InstanceId
+                Type = MatchEventType.SideCardDrawn,
+                PrimaryCardId = _drawingSideIndex,
+                SecondaryCardId = drawnCard.InstanceId
             });
         }
     }

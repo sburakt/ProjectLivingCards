@@ -7,6 +7,7 @@ namespace TCG.Model.Actions
     {
         private readonly int _laneIndex;
         private readonly int _attackerSideIndex;
+        
 
         public StandardLaneBattleAction(int laneIndex, int attackerSideIndex)
         {
@@ -32,17 +33,18 @@ namespace TCG.Model.Actions
             
             if (defenderLane.IsEmpty)
             {
-                match.PushAction(new CardAttackSideAction(_attackerSideIndex, attacker.InstanceId));
+                match.PushAction(new CardAttackSideAction(attacker.InstanceId, _attackerSideIndex^1));
             }
             else
             {
                 
                 RuntimeCard defenderCard = defenderLane.FrontCell.IsFull? defenderLane.FrontCell.Card : defenderLane.BackCell.Card;
                 match.PushAction(
-                    new CardAttackCardAction(_attackerSideIndex, attacker.InstanceId, defenderCard.InstanceId)
+                    new CardAttackCardAction(attacker.InstanceId, defenderCard.InstanceId)
                     );
                 
             }  
         }
+        
     }
 }

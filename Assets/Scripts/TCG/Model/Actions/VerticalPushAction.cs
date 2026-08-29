@@ -58,8 +58,8 @@ namespace TCG.Model.Actions
                 }
                 else // if (beforePushPosition.IsFront)
                 {
-                    DestroyCardAction destroyCardByPushAction = new DestroyCardAction(_pushedCardId, beforePushPosition.SideIndex);
-                    match.PushAction(destroyCardByPushAction);
+                    CardDestroyCardAction cardDestroyCardByPushAction = new CardDestroyCardAction(_pusherCardId, _pushedCardId);
+                    match.PushAction(cardDestroyCardByPushAction);
                 }
                 // note for myself bc i forget: its stack so move + push actually first pushes then removes in the game
             }
@@ -71,8 +71,8 @@ namespace TCG.Model.Actions
                     //so if never played to front they can be saved
                     //gives incentive to play back which is not a good move but idk
                     //i should test the game once finished
-                    DestroyCardAction destroyCardByPushAction = new DestroyCardAction(_pushedCardId, beforePushPosition.SideIndex);
-                    match.PushAction(destroyCardByPushAction);
+                    CardDestroyCardAction cardDestroyCardByPushAction = new CardDestroyCardAction(_pusherCardId, _pushedCardId);
+                    match.PushAction(cardDestroyCardByPushAction);
                 }
                 else // if (beforePushPosition.IsFront)
                 {

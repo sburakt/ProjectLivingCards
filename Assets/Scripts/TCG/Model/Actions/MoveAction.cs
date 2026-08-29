@@ -49,7 +49,7 @@ namespace TCG.Model.Actions
             match.EnqueueEvent(new MatchEvent
             {
                 Type = MatchEventType.CardMoved,
-                TargetId = _cardId
+                SecondaryCardId = _cardId
             });
             
             Debug.Log($"ACTION: Moved Card {_cardId} to Lane {_targetPosition.LaneIndex} ({(_targetPosition.IsFront ? "Front" : "Back")})");

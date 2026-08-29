@@ -7,7 +7,7 @@ namespace TCG.Model.Actions
     public class CardEnterFieldAction : MatchAction
     {
         private readonly int _cardId;
-
+        
         public CardEnterFieldAction(int cardId)
         {
             _cardId = cardId;

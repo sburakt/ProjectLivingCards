@@ -1,33 +1,41 @@
+using TCG.Model.Core;
+
 namespace TCG.Model.Events
 {
     public struct MatchEvent
     {
         public MatchEventType Type;
 
-        public int SideIndex;
+        public int PrimarySideIndex;
+        public int SecondarySideIndex;
         
-        public int SourceId;
-        public int TargetId;
+        public int PrimaryCardId;
+        public int SecondaryCardId;
+        public int ThirdCardId;
+        public int ForthCardId;
+        
+        public Position PrimaryPosition;
+        public Position SecondaryPosition;
+
+        public int EffectId;
         public int Value;
+
+        public int EnumAsInt;
         
-        public override string ToString()
-        {
-            return $"{Type} | Source: {SourceId} | Target: {TargetId} | Value: {Value}";
-        }
     }
 
     public enum MatchEventType
     {
-        CardAttackCard,
-        CardAttackSide,
-        CardDrawn,
-        CardPlayed,
-        CardDamaged,
-        CardDestroyed,
+        CardAttackedCard,
+        CardAttackedSide,
+        CardDestroyedCard,
+        CardEnteredField,
+        CardDamagedCard,
+        SideCardDrawn,
+        CardPushedCard,
         CardMoved,
-        PlayerDamaged,
-        TurnStarted,
-        EffectAdded,
+        CardDamagedSide,
+        SideTurnStarted,
     }
 }
 

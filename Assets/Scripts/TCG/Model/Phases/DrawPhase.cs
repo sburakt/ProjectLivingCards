@@ -53,8 +53,8 @@ namespace TCG.Model.Phases
                     match.AdvancePhase();
                     match.EnqueueEvent(new MatchEvent()
                     {
-                        Type = MatchEventType.TurnStarted,
-                        SourceId = match.ActiveSideIndex
+                        Type = MatchEventType.SideTurnStarted,
+                        PrimaryCardId = match.ActiveSideIndex
                     });
                     break;
             }
