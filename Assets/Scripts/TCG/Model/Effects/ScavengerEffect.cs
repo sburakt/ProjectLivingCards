@@ -21,8 +21,8 @@ namespace TCG.Model.Effects
         
         public void React(Match match, MatchEvent e)
         {
-            // condition check here its only 1 line so its single if statement
-            if (e.Type == MatchEventType.CardDestroyedCard)
+            //if (e.Type == MatchEventType.CardDestroyedCard) // old efficent version
+            if (e is DestroyedEvent destroyCardEvent)
             {
                 RuntimeCard card = match.FindRuntimeCardById(OwnerInstanceId);
                 if (card == null || card.State != RuntimeCard.CardState.OnBoard)

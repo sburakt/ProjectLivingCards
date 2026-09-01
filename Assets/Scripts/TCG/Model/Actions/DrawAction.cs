@@ -5,24 +5,26 @@ using UnityEngine;
 
 namespace TCG.Model.Actions
 {
-    public class DrawCardAction : MatchAction
+    public class DrawAction : MatchAction
     {
-        private int _drawingSideIndex;
+        private readonly int _drawingSideIndex;
 
-        public DrawCardAction(int drawingSideIndex)
+        public DrawAction(int drawingSideIndex, int groupId)
         {
             _drawingSideIndex = drawingSideIndex;
+            GroupId = groupId;
         }
 
         public override void Execute(Match match)
         {
+            base.UpdateGroupID(match);
             // get the drawing side and the deck
             Side drawingSide = match.Sides[_drawingSideIndex];
             // check if the deck is empty
             if (drawingSide.Deck.Count == 0) // should never reach below 0
             {
-                Debug.Log($"Player {_drawingSideIndex} tried to draw, but deck is empty!");
                 // event
+                
                 return;
             }
 
@@ -33,15 +35,8 @@ namespace TCG.Model.Actions
             // put the card to hand and change status
             drawingSide.Hand.Add(drawnCard);
             drawnCard.SetState(RuntimeCard.CardState.InHand);
-            //debug
-            string cardId = drawnCard.StaticCard.CardId;
-            Debug.Log($"Side {_drawingSideIndex} drew: {cardId}. Hand size: {drawingSide.Hand.Count}");
-            match.EnqueueEvent(new MatchEvent()
-            {
-                Type = MatchEventType.SideCardDrawn,
-                PrimaryCardId = _drawingSideIndex,
-                SecondaryCardId = drawnCard.InstanceId
-            });
+            // events
+            match.EnqueueEvent(new DrawnEvent(drawnCard.InstanceId,_drawingSideIndex,GroupId));
         }
     }
 }

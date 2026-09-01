@@ -1,5 +1,7 @@
 ﻿using TCG.Model.Cards;
 using TCG.Model.Core;
+using TCG.Model.Enums;
+using TCG.Model.Events;
 
 namespace TCG.Model.Actions
 {
@@ -15,16 +17,18 @@ namespace TCG.Model.Actions
         private readonly int _pushedCardId;
         private readonly VerticalPushDirection _direction;
         
-        public VerticalPushAction(int pusherCardId, int pushedCardId, VerticalPushDirection direction)
+        public VerticalPushAction(int pusherCardId, int pushedCardId, VerticalPushDirection direction, int groupId)
         {
             _pusherCardId = pusherCardId;
             _pushedCardId = pushedCardId;
             _direction = direction;
+            GroupId = groupId;
         }
         
         // todo code repeats cascading push part
         public override void Execute(Match match)
         {
+            base.UpdateGroupID(match);
             RuntimeCard pushedCard = match.FindRuntimeCardById(_pushedCardId);
             Position beforePushPosition = pushedCard.Position;
             
@@ -45,21 +49,21 @@ namespace TCG.Model.Actions
                         IsFront = true
                     };
                     // move to new position
-                    MoveCardAction moveCardToFrontAction = new MoveCardAction(_pushedCardId, afterPushPosition);
+                    MoveCardAction moveCardToFrontAction = new MoveCardAction(_pushedCardId, afterPushPosition, GroupId);
                     match.PushAction(moveCardToFrontAction);
                     //check if the front is full
                     Cell afterPushCell = match.GetCell(afterPushPosition);
                     if (afterPushCell.IsFull)
                     {
                         int frontCardId = afterPushCell.Card.InstanceId;
-                        VerticalPushAction cascadedVerticalPushAction = new VerticalPushAction(_pushedCardId, frontCardId, _direction);
+                        VerticalPushAction cascadedVerticalPushAction = new VerticalPushAction(_pushedCardId, frontCardId, _direction,GroupId);
                         match.PushAction(cascadedVerticalPushAction);
                     }
                 }
                 else // if (beforePushPosition.IsFront)
                 {
-                    CardDestroyCardAction cardDestroyCardByPushAction = new CardDestroyCardAction(_pusherCardId, _pushedCardId);
-                    match.PushAction(cardDestroyCardByPushAction);
+                    DestroyCardAction destroyCardByPushAction = new DestroyCardAction(_pusherCardId, _pushedCardId, DestroyCause.Push,GroupId);
+                    match.PushAction(destroyCardByPushAction);
                 }
                 // note for myself bc i forget: its stack so move + push actually first pushes then removes in the game
             }
@@ -71,8 +75,8 @@ namespace TCG.Model.Actions
                     //so if never played to front they can be saved
                     //gives incentive to play back which is not a good move but idk
                     //i should test the game once finished
-                    CardDestroyCardAction cardDestroyCardByPushAction = new CardDestroyCardAction(_pusherCardId, _pushedCardId);
-                    match.PushAction(cardDestroyCardByPushAction);
+                    DestroyCardAction destroyCardByPushAction = new DestroyCardAction(_pusherCardId, _pushedCardId, DestroyCause.Push,GroupId);
+                    match.PushAction(destroyCardByPushAction);
                 }
                 else // if (beforePushPosition.IsFront)
                 {
@@ -83,14 +87,14 @@ namespace TCG.Model.Actions
                         IsBack = true
                     };
                     // move to new position
-                    MoveCardAction moveCardToFrontAction = new MoveCardAction(_pushedCardId, afterPushPosition);
+                    MoveCardAction moveCardToFrontAction = new MoveCardAction(_pushedCardId, afterPushPosition, GroupId);
                     match.PushAction(moveCardToFrontAction);
                     //check if the front is full
                     Cell afterPushCell = match.GetCell(afterPushPosition);
                     if (afterPushCell.IsFull)
                     {
                         int frontCardId = afterPushCell.Card.InstanceId;
-                        VerticalPushAction cascadedVerticalPushAction = new VerticalPushAction(_pushedCardId, frontCardId, _direction);
+                        VerticalPushAction cascadedVerticalPushAction = new VerticalPushAction(_pushedCardId, frontCardId, _direction, GroupId);
                         match.PushAction(cascadedVerticalPushAction);
                     }
                 }
@@ -102,13 +106,9 @@ namespace TCG.Model.Actions
             // and LogicalPusher the original initiator
 
             //Event
-            // todo emit events
+            match.EnqueueEvent(new PushedEvent(_pushedCardId, _pusherCardId, GroupId));
         }
         
-        public enum VerticalPushDirection
-        {
-            Front,
-            Back
-        }
+        
     }
 }

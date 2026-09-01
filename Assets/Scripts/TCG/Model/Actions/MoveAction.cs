@@ -1,7 +1,6 @@
 ﻿using TCG.Model.Cards;
 using TCG.Model.Core;
 using TCG.Model.Events;
-using UnityEngine;
 
 namespace TCG.Model.Actions
 {
@@ -10,30 +9,22 @@ namespace TCG.Model.Actions
         private readonly int _cardId;
         private readonly Position _targetPosition;
 
-        public MoveCardAction(int cardId, int targetSideIndex, int targetLaneIndex, bool toFront)
-        {
-            _cardId = cardId;
-            _targetPosition = new Position()
-            {
-                SideIndex = targetSideIndex,
-                LaneIndex = targetLaneIndex,
-                IsFront = toFront
-            };
-        }
-
-        public MoveCardAction(int cardId, Position targetPosition)
+        public MoveCardAction(int cardId, Position targetPosition, int groupId)
         {
             _cardId = cardId;
             _targetPosition = targetPosition;
+            GroupId = groupId;
         }
 
         public override void Execute(Match match)
         {
+            base.UpdateGroupID(match);
             RuntimeCard card = match.FindRuntimeCardById(_cardId);
             // fizzle check card must be on the field for MoveACtion
-            if (card == null || card.State != RuntimeCard.CardState.OnBoard) 
+            if (card.State != RuntimeCard.CardState.OnBoard) 
                 return;
 
+            Position oldPosition = card.Position;
             Cell currentCell = match.GetCell(card.Position);
             Cell targetCell = match.GetCell(_targetPosition);
             
@@ -46,13 +37,8 @@ namespace TCG.Model.Actions
             card.SetPosition(_targetPosition);
             
             // Event
-            match.EnqueueEvent(new MatchEvent
-            {
-                Type = MatchEventType.CardMoved,
-                SecondaryCardId = _cardId
-            });
+            match.EnqueueEvent(new MovedEvent(_cardId, oldPosition, _targetPosition, GroupId));
             
-            Debug.Log($"ACTION: Moved Card {_cardId} to Lane {_targetPosition.LaneIndex} ({(_targetPosition.IsFront ? "Front" : "Back")})");
         }
     }
 }

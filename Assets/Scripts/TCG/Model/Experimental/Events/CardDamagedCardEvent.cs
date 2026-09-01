@@ -1,4 +1,6 @@
-﻿namespace TCG.Model.Events
+﻿using TCG.Model.Enums;
+
+namespace TCG.Model.Experimental.Events
 {
     public static class CardDamagedCardEvent
     {
@@ -18,9 +20,4 @@
         }
 
     }
-        public enum DamageType
-        {
-            BattleDamage,
-            EffectDamage,
-        }
 }

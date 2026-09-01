@@ -9,14 +9,16 @@ namespace TCG.Model.Actions
         private readonly int _attackerSideIndex;
         
 
-        public StandardLaneBattleAction(int laneIndex, int attackerSideIndex)
+        public StandardLaneBattleAction(int laneIndex, int attackerSideIndex, int groupId)
         {
             _laneIndex = laneIndex;
             _attackerSideIndex = attackerSideIndex;
+            GroupId = groupId;
         }
 
         public override void Execute(Match match)
         {
+            base.UpdateGroupID(match);
             Side attackerSide = match.Sides[_attackerSideIndex];
             Side defenderSide = match.Sides[_attackerSideIndex ^ 1];
             
@@ -33,14 +35,14 @@ namespace TCG.Model.Actions
             
             if (defenderLane.IsEmpty)
             {
-                match.PushAction(new CardAttackSideAction(attacker.InstanceId, _attackerSideIndex^1));
+                match.PushAction(new AttackSideAction(attacker.InstanceId, _attackerSideIndex^1, GroupId));
             }
             else
             {
                 
                 RuntimeCard defenderCard = defenderLane.FrontCell.IsFull? defenderLane.FrontCell.Card : defenderLane.BackCell.Card;
                 match.PushAction(
-                    new CardAttackCardAction(attacker.InstanceId, defenderCard.InstanceId)
+                    new AttackCardAction(attacker.InstanceId, defenderCard.InstanceId, GroupId)
                     );
                 
             }  

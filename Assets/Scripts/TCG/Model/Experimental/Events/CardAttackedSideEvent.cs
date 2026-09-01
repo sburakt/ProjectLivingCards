@@ -1,4 +1,4 @@
-﻿namespace TCG.Model.Events
+﻿namespace TCG.Model.Experimental.Events
 {
     public static class CardAttackedSideEvent
     {

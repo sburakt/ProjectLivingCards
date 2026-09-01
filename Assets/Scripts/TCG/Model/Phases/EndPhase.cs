@@ -1,5 +1,3 @@
-using System.Data.Common;
-using TCG.Model.Actions;
 using TCG.Model.Core;
 
 using UnityEngine;

@@ -1,6 +1,5 @@
 ﻿using TCG.Model.Core;
 using TCG.Model.Actions;
-using TCG.Model.Events;
 using UnityEngine;
 
 namespace TCG.Model.Phases
@@ -37,7 +36,7 @@ namespace TCG.Model.Phases
                 
                 case DrawStep.Draw:
                     Debug.Log("Draw Phase Draw");
-                    match.PushAction(new DrawCardAction(match.ActiveSideIndex));
+                    match.PushAction(new DrawAction(match.ActiveSideIndex,Match.UNASSIGNED_GROUP_ID));
                     match.CurrentPhaseStep = (int)DrawStep.PostDraw;
                     break;
 
@@ -51,11 +50,6 @@ namespace TCG.Model.Phases
                 case DrawStep.Finished:
                     Debug.Log("Draw Phase Finished");
                     match.AdvancePhase();
-                    match.EnqueueEvent(new MatchEvent()
-                    {
-                        Type = MatchEventType.SideTurnStarted,
-                        PrimaryCardId = match.ActiveSideIndex
-                    });
                     break;
             }
         }

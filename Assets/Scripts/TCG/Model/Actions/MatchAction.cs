@@ -4,7 +4,14 @@ namespace TCG.Model.Actions
 {
     public abstract class MatchAction
     {
+        public int GroupId { get; protected set; }
+
         public abstract void Execute(Match match);
+        
+        public virtual void UpdateGroupID(Match match)
+        {
+            GroupId = match.ResolveGroupId(GroupId);
+        }
     }
 }
 
@@ -29,9 +36,4 @@ namespace TCG.Model.Actions
     }
     */
 
-
-    // enemy AI will probably use MCTS and MinMax and some preset combos i need to search what tcg ai can use
-    // this means Match will be cloned and each branch will create action to run once
-    // actions will create lots of short life class in short time
-    // gc can kill performance
-    // 
+    //possible use case for tagged union profile gc impact on enemy ai algo

@@ -1,23 +1,25 @@
 ﻿using TCG.Model.Cards;
 using TCG.Model.Core;
+using TCG.Model.Enums;
 using TCG.Model.Events;
-using UnityEngine;
 
 namespace TCG.Model.Actions
 {
-    public class CardAttackSideAction : MatchAction
+    public class AttackSideAction : MatchAction
     {
         private readonly int _attackerCardID;
         private readonly int _defenderSideIndex;
 
-        public CardAttackSideAction( int attackerCardID ,int defenderSideIndex)
+        public AttackSideAction( int attackerCardID ,int defenderSideIndex, int groupId)
         {
             _attackerCardID = attackerCardID;
             _defenderSideIndex = defenderSideIndex;
+            GroupId = groupId;
         }
 
         public override void Execute(Match match)
         {
+            base.UpdateGroupID(match);
             RuntimeCard attackerCard = match.FindRuntimeCardById(_attackerCardID);
             Side defenderSide = match.Sides[_defenderSideIndex];
             
@@ -35,15 +37,10 @@ namespace TCG.Model.Actions
             // check for any flag that cancels action ig cannot attack or no direct attack
             
             defenderSide.LifePoints -= damage;
-           
+
             if (damage > 0)
-                match.EnqueueEvent(new MatchEvent()
-                {
-                    Type = MatchEventType.CardDamagedSide,
-                    PrimaryCardId = _attackerCardID,
-                    SecondarySideIndex = _defenderSideIndex,
-                    Value = damage
-                });
+                match.EnqueueEvent(new DamagedSideEvent(_attackerCardID, _defenderSideIndex, damage, DamageType.AttackDamage,GroupId));
+                
 
             // check for game over condition
             if (defenderSide.LifePoints <= 0)
@@ -53,12 +50,7 @@ namespace TCG.Model.Actions
                 // todo game over logic
             }
             // event
-            match.EnqueueEvent(new MatchEvent()
-            {
-                Type = MatchEventType.CardAttackedSide,
-                PrimaryCardId = _attackerCardID,
-                SecondarySideIndex = _defenderSideIndex
-            });
+            match.EnqueueEvent(new AttackedSideEvent(_attackerCardID,_defenderSideIndex,GroupId));
         }
     }
 }

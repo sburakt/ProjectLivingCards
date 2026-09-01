@@ -16,14 +16,15 @@ namespace TCG.Model.Phases
         // split into per player setup if needed
         public override void Execute(Match match)
         {
+            int groupId = match.ResolveGroupId(Match.UNASSIGNED_GROUP_ID);
             for (int i = 0; i < 4; i++)
             {
-                match.PushAction(new DrawCardAction(1));
+                match.PushAction(new DrawAction(1,groupId));
             }
 
             for (int i = 0; i < 4; i++)
             {
-                match.PushAction(new DrawCardAction(0));
+                match.PushAction(new DrawAction(0,groupId));
             }
             
             match.AdvancePhase();

@@ -15,6 +15,8 @@ namespace TCG.Model.Core
     {
         // match vars
         private int _nextInstanceID = 1;
+        private int _nextGroupID = 1;
+        public const int UNASSIGNED_GROUP_ID = 0;
         private bool _matchOver = false;
         private readonly Player[] _players = new Player[2];
 
@@ -130,6 +132,9 @@ namespace TCG.Model.Core
         private void Tick()
         {
                 // before phase execution we must see if stack empty
+                // yugioh events are checked after every action and can be intrupted by any effect
+                // heartstone stack is depleted (action is full resolved) before reaction
+                // idk yugioh style gives more flexablitiy to game but might be complex for players
             if (_actionStack.Count > 0)
             {
                 _actionStack.Pop().Execute(this);
@@ -221,6 +226,13 @@ namespace TCG.Model.Core
 
         // might be improved or moved out of match class
 
+        public int ResolveGroupId(int number)
+        {
+            if (number != UNASSIGNED_GROUP_ID)
+                return number;
+            return _nextGroupID++;
+        }
+
         public RuntimeCard FindRuntimeCardById(int targetId, int expectedSideHint = 0)
         {
             RuntimeCard fastResult = Sides[expectedSideHint].FindRuntimeCardById(targetId);
@@ -229,7 +241,6 @@ namespace TCG.Model.Core
             int otherSide = expectedSideHint ^ 1;
             RuntimeCard slowResult = Sides[otherSide].FindRuntimeCardById(targetId);
             if (slowResult != null) return slowResult;
-            // If it's truly gone, return null to fizzle the action safely
             return null;
         }
         private List<RuntimeCard> CreateRuntimeCards(List<PersistentCard> persistentCards, Side side)

@@ -1,24 +1,25 @@
-﻿using System;
-using TCG.Model.Cards;
+﻿using TCG.Model.Cards;
 using TCG.Model.Core;
+using TCG.Model.Enums;
 using TCG.Model.Events;
-using UnityEngine;
 
 namespace TCG.Model.Actions
 {
-    public class CardAttackCardAction : MatchAction
+    public class AttackCardAction : MatchAction
     {
         private readonly int _attackerCardID;
         private readonly int _defenderCardID;
 
-        public CardAttackCardAction(int attackerCardID, int defenderCardID)
+        public AttackCardAction(int attackerCardID, int defenderCardID, int groupId)
         {
             _attackerCardID = attackerCardID;
             _defenderCardID = defenderCardID;
+            GroupId = groupId;
         }
 
         public override void Execute(Match match)
         {
+            base.UpdateGroupID(match);
             RuntimeCard attackerCard = match.FindRuntimeCardById(_attackerCardID);
             RuntimeCard defenderCard = match.FindRuntimeCardById(_defenderCardID);
             int attackerSideIndex = match.ActiveSideIndex;
@@ -43,15 +44,8 @@ namespace TCG.Model.Actions
           
             
             int amount = attackerCard.CalculateStat(match, RuntimeCard.StatType.Attack);
-            match.PushAction( new CardDamageCardAction( _attackerCardID , _defenderCardID, amount) );
-            match.EnqueueEvent(new MatchEvent()
-            {
-                Type = MatchEventType.CardAttackedCard,
-                PrimarySideIndex = attackerSideIndex,
-                SecondarySideIndex = attackerSideIndex^1,
-                PrimaryCardId = _attackerCardID,
-                SecondaryCardId = _defenderCardID
-            });
+            match.PushAction( new DamageCardAction( _attackerCardID , _defenderCardID, amount, DamageType.AttackDamage, GroupId) );
+            match.EnqueueEvent(new AttackedCardEvent(_attackerCardID, _defenderCardID, GroupId));
         }
     }
 }

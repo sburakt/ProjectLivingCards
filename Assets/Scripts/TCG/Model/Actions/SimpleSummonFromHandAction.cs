@@ -1,21 +1,23 @@
 ﻿using TCG.Model.Cards;
 using TCG.Model.Core;
+using TCG.Model.Events;
 
 namespace TCG.Model.Actions
 {
-    public class SimpleSummonFromHand : MatchAction
+    public class SimpleSummonFromHandAction : MatchAction
     {
         private readonly int _cardId;
         private readonly Position _position;
 
-        public SimpleSummonFromHand(int cardId, Position position)
+        public SimpleSummonFromHandAction(int cardId, Position position, int groupId)
         {
             _cardId = cardId;
             _position = position;
+            GroupId = groupId;
         }
         public override void Execute(Match match)
         {
-            
+            base.UpdateGroupID(match);
             RuntimeCard card = match.FindRuntimeCardById(_cardId);
             Cell cell = match.GetCell(_position);
 
@@ -31,9 +33,10 @@ namespace TCG.Model.Actions
             cell.SetCard(card);
             card.SetPosition(_position);
 
-            CardEnterFieldAction cardEnterFieldAction = new CardEnterFieldAction(_cardId);
+            CardEnterFieldAction cardEnterFieldAction = new CardEnterFieldAction(_cardId, _position.SideIndex, GroupId);
             match.PushAction(cardEnterFieldAction);
             //event
+            match.EnqueueEvent(new SimpleSummonEvent(_cardId,GroupId));
 
         }
     }

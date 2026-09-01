@@ -40,17 +40,17 @@ namespace TCG.Model.Phases
                     break;
 
                 case BattleSteps.Lane0:
-                    match.PushAction(new StandardLaneBattleAction(0,match.ActiveSideIndex));
+                    match.PushAction(new StandardLaneBattleAction(0,match.ActiveSideIndex, Match.UNASSIGNED_GROUP_ID));
                     match.CurrentPhaseStep = (int)BattleSteps.Lane1;
                     break;
 
                 case BattleSteps.Lane1:
-                    match.PushAction(new StandardLaneBattleAction(1,match.ActiveSideIndex));
+                    match.PushAction(new StandardLaneBattleAction(1,match.ActiveSideIndex,Match.UNASSIGNED_GROUP_ID));
                     match.CurrentPhaseStep = (int)BattleSteps.Lane2;
                     break;
 
                 case BattleSteps.Lane2:
-                    match.PushAction(new StandardLaneBattleAction(2,match.ActiveSideIndex));
+                    match.PushAction(new StandardLaneBattleAction(2,match.ActiveSideIndex,Match.UNASSIGNED_GROUP_ID));
                     match.CurrentPhaseStep = (int)BattleSteps.PostBattle;
                     break;
             

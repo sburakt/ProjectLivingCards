@@ -1,23 +1,28 @@
 ﻿using TCG.Model.Cards;
 using TCG.Model.Core;
+using TCG.Model.Enums;
 using TCG.Model.Events;
 using UnityEngine;
 
 namespace TCG.Model.Actions
 {
-    public class CardDestroyCardAction : MatchAction
+    public class DestroyCardAction : MatchAction
     {
         private readonly int _destroyerCardId;
         private readonly int _toBeDestroyedCardId;
+        private readonly DestroyCause _destroyCause;
 
-        public CardDestroyCardAction(int destroyerCardId, int toBeDestroyedCardId)
+        public DestroyCardAction(int destroyerCardId, int toBeDestroyedCardId, DestroyCause destroyCause, int groupId)
         {
             _destroyerCardId = destroyerCardId;
             _toBeDestroyedCardId = toBeDestroyedCardId;
+            _destroyCause = destroyCause;
+            GroupId = groupId;
         }
 
         public override void Execute(Match match)
         {
+            base.UpdateGroupID(match);
             RuntimeCard toBeDestroyedCard = match.FindRuntimeCardById(_toBeDestroyedCardId);
             
             // fizzle checks
@@ -30,13 +35,7 @@ namespace TCG.Model.Actions
             toBeDestroyedCard.Owner.Graveyard.Add(toBeDestroyedCard);
            
             
-            match.EnqueueEvent( new MatchEvent()
-            {
-                Type = MatchEventType.CardDestroyedCard,
-                PrimaryCardId = _destroyerCardId,
-                SecondaryCardId = _toBeDestroyedCardId,
-            });
-            Debug.Log($"Card {_destroyerCardId} destroyed {toBeDestroyedCard.StaticCard.CardId}.");
+            match.EnqueueEvent( new DestroyedEvent(_destroyerCardId,_toBeDestroyedCardId, _destroyCause, GroupId));
         }
     }
 }
