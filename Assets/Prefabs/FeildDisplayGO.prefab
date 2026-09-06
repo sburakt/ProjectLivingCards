@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1926532888652584059}
   m_Layer: 0
-  m_Name: sloth (3)
+  m_Name: sloth (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -124,7 +124,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4793662836669773470}
   m_Layer: 0
-  m_Name: sloth (5)
+  m_Name: sloth (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -186,7 +186,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5801442959306397760}
   m_Layer: 0
-  m_Name: sloth (2)
+  m_Name: sloth (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -292,10 +292,10 @@ MonoBehaviour:
   cardDisplay: {fileID: 9018963462830302544, guid: 91e7d00237718ca4aa70e238feaca4e8, type: 3}
   sloths:
   - {fileID: 5621213759844025615}
-  - {fileID: 5801442959306397760}
-  - {fileID: 1926532888652584059}
   - {fileID: 8670713106130878876}
+  - {fileID: 5801442959306397760}
   - {fileID: 4793662836669773470}
+  - {fileID: 1926532888652584059}
   - {fileID: 2320663545806725165}
 --- !u!1 &8338756396221375287
 GameObject:
@@ -307,7 +307,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8670713106130878876}
   m_Layer: 0
-  m_Name: sloth (4)
+  m_Name: sloth (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
