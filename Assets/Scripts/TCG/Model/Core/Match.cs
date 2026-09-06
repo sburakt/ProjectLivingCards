@@ -37,7 +37,8 @@ namespace TCG.Model.Core
         public  IReadOnlyList<Effect> EffectList => _effects;
         private readonly Stack<MatchAction> _actionStack = new Stack<MatchAction>();
         private readonly Queue<MatchEvent> _eventQueue = new Queue<MatchEvent>();
-        public readonly Queue<MatchEvent> EventLog = new Queue<MatchEvent>();
+        private readonly Queue<MatchEvent> _reactQueue = new Queue<MatchEvent>();
+        public readonly Queue<MatchEvent> VisibleEventQueue = new Queue<MatchEvent>();
 
         public void PushAction(MatchAction action)
         {
@@ -113,7 +114,6 @@ namespace TCG.Model.Core
             // more initializaion code here
             Debug.Log("Initialized Match");
             Debug.Log($"deck size is {_sides[0].Deck.Count}");
-            Debug.Log(_sides[0].Deck[0].BaseDefense);
             ChangePhase(SetupPhase.Instance);
         }
 
@@ -131,23 +131,32 @@ namespace TCG.Model.Core
 
         private void Tick()
         {
-                // before phase execution we must see if stack empty
-                // yugioh events are checked after every action and can be intrupted by any effect
-                // heartstone stack is depleted (action is full resolved) before reaction
-                // idk yugioh style gives more flexablitiy to game but might be complex for players
             if (_actionStack.Count > 0)
             {
                 _actionStack.Pop().Execute(this);
+                ProcessEvents();
+                return;
             }
-            else // call phase execute 
+            if (_reactQueue.Count > 0)
             {
-                _currentPhase.Execute(this);
+                ReactEvents();
+                RemoveTerminatedEffects();
+                return;   
             }
-            ProcessEvents();
-            RemoveTerminatedEffects();
+            _currentPhase.Execute(this);
         }
 
         private void ProcessEvents()
+        {
+            while (_eventQueue.Count > 0)
+            {
+                MatchEvent e = _eventQueue.Dequeue();
+                VisibleEventQueue.Enqueue(e);
+                _reactQueue.Enqueue(e);
+            }
+        }
+
+        private void ReactEvents()
         {
             while (_eventQueue.Count > 0)
             {
@@ -157,9 +166,9 @@ namespace TCG.Model.Core
                     if (effect is IReactiveEffect reactive)
                         reactive.React(this, currentEvent);
                 }
-                EventLog.Enqueue(currentEvent);
             }
         }
+
 
         public void PassTurn()
         {
@@ -241,6 +250,7 @@ namespace TCG.Model.Core
             int otherSide = expectedSideHint ^ 1;
             RuntimeCard slowResult = Sides[otherSide].FindRuntimeCardById(targetId);
             if (slowResult != null) return slowResult;
+            Debug.LogWarning($"no card with the id {targetId}");
             return null;
         }
         private List<RuntimeCard> CreateRuntimeCards(List<PersistentCard> persistentCards, Side side)
