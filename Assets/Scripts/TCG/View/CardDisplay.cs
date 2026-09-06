@@ -1,5 +1,4 @@
 ﻿using TMPro;
-using UnityEditor;
 using UnityEngine;
 
 namespace TCG.View
@@ -14,14 +13,14 @@ namespace TCG.View
         [SerializeField] private TextMeshPro health;
         [SerializeField] private TextMeshPro baseHealth;
         
-        public CardDisplayData CardDisplayData;
+        public CardSnapshot CardSnapshot;
 
-        public void Display(CardDisplayData data)
+        public void Display(CardSnapshot data)
         {
-            CardDisplayData = data;
+            CardSnapshot = data;
             cardName.text = data.CardName;
             cardId.text =  data.InstanceId.ToString();
-            buffs.text = data.Buffs.Count.ToString();
+            //buffs.text = data.Buffs.Count.ToString();
             attack.text = data.Attack.ToString();
             health.text = data.CurrentHealth.ToString();
             baseHealth.text = data.BaseHealth.ToString();

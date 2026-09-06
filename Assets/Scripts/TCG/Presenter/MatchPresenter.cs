@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using TCG.Model.Cards;
 using TCG.Model.Core;
-using TCG.Model.Effects;
 using TCG.Model.Events;
 using TCG.View;
+using TCG.View.Events;
 
 namespace TCG.Presenter
 {
@@ -11,6 +12,8 @@ namespace TCG.Presenter
     {
         private readonly Match _match;
         private readonly MatchView _view;
+        private readonly HashSet<int> _introducedCards = new HashSet<int>();
+        private readonly Dictionary<int,CardSnapshot> _cardSnapshots = new Dictionary<int,CardSnapshot>();
 
         public MatchPresenter(Match match, MatchView view)
         {
@@ -28,120 +31,65 @@ namespace TCG.Presenter
         private void ContinueMatch()
         {
             InputRequest inputRequest = null;
+            List<EventSnapshot> eventSnapshots = new List<EventSnapshot>();
             do // do-while (inputRequest is null)
             {
                 inputRequest = _match.Resolve();
-                // record each turn snapshot here
+                while (_match.VisibleEventQueue.Count > 0)
+                {
+                    MatchEvent e = _match.VisibleEventQueue.Dequeue();
+                    eventSnapshots.Add(new EventSnapshot()
+                    {
+                        MatchEvent = e,
+                        CardSnapshot = new CardSnapshot(e.IntroducedCardId,_match)
+                    });
+                }
             } while (inputRequest is null);
+
+            List<List<EventSnapshot>> groups = GroupEventSnapshots(eventSnapshots);
+            
             // this part bellow runs when inputRequest is no longer null
             _view.ShowOutput(inputRequest.DisplayMessage); 
             _view.ShowMoves(inputRequest.LegalMoves);
             _view.ShowState(_match.GetStringState());
-            _view.DisplayGameDisplay(BuildGameDisplayData(inputRequest));
+            _view.DisplayGameDisplay(new BoardSnapshot(_match));
         }
 
+        private ViewEvent CreateViewEvent(List<EventSnapshot> group)
+        {
+            MatchEvent primaryEvent = group[0].MatchEvent;
+
+            return primaryEvent switch
+            {
+                DrawnEvent => new DrawEvent(group),
+                _ => throw new NotImplementedException($"No ViewEvent mapping for {primaryEvent.GetType().Name}")
+            };
+        }
+            
+        private List<List<EventSnapshot>> GroupEventSnapshots(List<EventSnapshot> eventSnapshots)
+        {
+            List<List<EventSnapshot>> groups = new List<List<EventSnapshot>>();
+
+            int currentGroupId = -1;
+
+            foreach (EventSnapshot snapshot in eventSnapshots)
+            {
+                if (snapshot.MatchEvent.GroupId != currentGroupId)
+                {
+                    currentGroupId = snapshot.MatchEvent.GroupId;
+                    groups.Add(new List<EventSnapshot>());
+                }
+
+                groups[^1].Add(snapshot);
+            }
+
+            return groups;
+        }
+        
         private void HandlePlayerInput(PlayerInput playerInput)
         {
             _match.ReceiveInput(playerInput);
             ContinueMatch();
-        }
-        
-        // display Data Build
-
-        public GameDisplayData BuildGameDisplayData(InputRequest inputRequest)
-        {
-            SideDisplayData[] sideDisplayData = new SideDisplayData[2];
-            sideDisplayData[0] = BuildSideDisplayData(0);
-            sideDisplayData[1] = BuildSideDisplayData(1);
-            List<MatchEvent> eventLog = new List<MatchEvent>();
-            while (_match.EventLog.TryDequeue(out var matchEvent))
-            {
-                eventLog.Add(matchEvent);
-            }
-            GameDisplayData gameDisplayData = new GameDisplayData()
-            {
-                Sides = sideDisplayData,
-                ActiveSideIndex = _match.ActiveSideIndex,
-                EventLog = eventLog,
-                //LegalMoves = inputRequest.LegalMoves,
-            };
-            return gameDisplayData;
-        }
-
-        private SideDisplayData BuildSideDisplayData(int sideIndex)
-        {
-            Side side = _match.Sides[sideIndex];
-            int lifePoints = side.LifePoints;
-            List<CardDisplayData> hand = new List<CardDisplayData>();
-            CardDisplayData[] field = new CardDisplayData[6];
-            foreach (RuntimeCard card  in side.Hand)
-            {
-                hand.Add(BuildCardDisplayData(card));
-            }
-            int i = 0;
-            foreach (RuntimeCard card in side.GetCardSlotsInField())
-            {
-                if (card is null)
-                    field[i] = null;
-                else
-                    field[i] = BuildCardDisplayData(card);
-
-                i++;
-            }
-            SideDisplayData sideDisplayData = new SideDisplayData()
-            {
-                LifePoints = side.LifePoints,
-                Hand = hand,
-                Field = field
-            };
-            return sideDisplayData;
-        }
-
-        private CardDisplayData BuildCardDisplayData(RuntimeCard runtimeCard)
-        {
-            CardDisplayData cardDisplayData = new CardDisplayData()
-            {
-                InstanceId = runtimeCard.InstanceId,
-                CardName = runtimeCard.StaticCard.CardId,
-                Attack = runtimeCard.CalculateStat(_match, RuntimeCard.StatType.Attack),
-                BaseHealth = runtimeCard.BaseHealth,
-                CurrentHealth = runtimeCard.CurrentHealth,
-                Buffs = BuildBuffDisplayData(runtimeCard)
-            };
-            return cardDisplayData;
-        }
-
-        private List<BuffDisplayData> BuildBuffDisplayData(RuntimeCard runtimeCard)
-        {
-            List<BuffDisplayData> buffDisplayDatas = new List<BuffDisplayData>();
-            int buffId;
-            int? buffStack;
-            foreach (Effect effect in _match.EffectList)
-            {
-                if (effect is IBuff buff)
-                {
-                    if (buff.TargetInstanceId == runtimeCard.InstanceId)
-                    {
-                        buffId = buff.BuffId;
-                        buffStack = buff.Stack;
-                        buffDisplayDatas.Add(new BuffDisplayData()
-                        {
-                            BuffId = buffId,
-                            StackCount = buffStack
-                        });
-                    }
-                }
-            }
-            return buffDisplayDatas;
-        }
-
-        // test only
-        private void AddAllLogsFromQueue() 
-        {
-            while (_match.EventLog.TryDequeue(out var matchEvent))
-            {
-                _view.AddLog(matchEvent.ToString());
-            }
         }
     }
 }
