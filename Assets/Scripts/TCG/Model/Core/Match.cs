@@ -141,7 +141,7 @@ namespace TCG.Model.Core
             {
                 ReactEvents();
                 RemoveTerminatedEffects();
-                return;   
+                return;
             }
             _currentPhase.Execute(this);
         }
@@ -158,9 +158,9 @@ namespace TCG.Model.Core
 
         private void ReactEvents()
         {
-            while (_eventQueue.Count > 0)
+            while (_reactQueue.Count > 0)
             {
-                MatchEvent currentEvent = _eventQueue.Dequeue();
+                MatchEvent currentEvent = _reactQueue.Dequeue();
                 foreach (Effect effect in _effects)
                 {
                     if (effect is IReactiveEffect reactive)
