@@ -99,11 +99,6 @@ namespace TCG.Model.Actions
                     }
                 }
             }
-            // TODO: cascade push uses _pushedCardId as pusher for visual continuity
-            // but _pusherCardId should be for gameplay logic
-            // for "when this card pushes another card out" effects
-            // view will need both: VisualPusher the physically moving card
-            // and LogicalPusher the original initiator
 
             //Event
             match.EnqueueEvent(new PushedEvent(_pushedCardId, _pusherCardId, GroupId));
