@@ -1,4 +1,5 @@
-﻿using TCG.Model.Core;
+﻿using TCG.Model.Cards;
+using TCG.Model.Core;
 using TCG.Model.Enums;
 
 namespace TCG.Model.Events
@@ -6,6 +7,7 @@ namespace TCG.Model.Events
     public abstract class MatchEvent
     {
         public int GroupId { get; set; }
+        public int IntroducedCardId = 0;
     }
     
     public class AttackedCardEvent :MatchEvent
@@ -95,6 +97,7 @@ namespace TCG.Model.Events
             CardId = cardId;
             SideIndex = sideIndex;
             GroupId = groupId;
+            IntroducedCardId = cardId;
         }
     }
 
@@ -108,6 +111,7 @@ namespace TCG.Model.Events
             CardId = cardId;
             SideIndex = sideIndex;
             GroupId = groupId;
+            IntroducedCardId = cardId;
         }
     }
 
@@ -115,12 +119,14 @@ namespace TCG.Model.Events
     {
         public int DrawnCardId { get; private set; }
         public int DrawingSideIndex { get; private set; }
+        
 
         public DrawnEvent(int drawnCardId, int drawingSideIndex, int groupId)
         {
             DrawnCardId = drawnCardId;
             DrawingSideIndex = drawingSideIndex;
             GroupId = groupId;
+            IntroducedCardId = drawnCardId;
         }
     }
 
@@ -147,6 +153,7 @@ namespace TCG.Model.Events
         {
             SummonedCardId = summonedCardId;
             GroupId = groupId;
+            IntroducedCardId = summonedCardId;
         }
     }
     
@@ -171,6 +178,7 @@ namespace TCG.Model.Events
         {
             SummonedCardId = summonedCardId;
             GroupId = groupId;
+            IntroducedCardId = summonedCardId;
         }
     }
 
