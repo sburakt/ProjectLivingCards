@@ -1,14 +1,9 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using TCG;
 using TCG.Model.Cards;
 using TCG.Model.Core;
 using TCG.Presenter;
 using TCG.View;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 public class MatchInitializer : MonoBehaviour
 {
