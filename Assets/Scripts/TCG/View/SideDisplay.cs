@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace TCG.View
 {
@@ -10,11 +10,24 @@ namespace TCG.View
         [SerializeField] private TextMeshPro lifePoint;
         [SerializeField] private FieldDisplay fieldDisplay;
 
-        public void Display(SideDisplayData data)
+        public void Display(SideSnapshot data, BoardSnapshot board)
         {
             lifePoint.text = data.LifePoints.ToString();
-            handDisplay.Display(data.Hand);
-            fieldDisplay.Display(data.Field);
+            List<CardSnapshot> hand = new List<CardSnapshot>();
+            List<CardSnapshot> field = new List<CardSnapshot>();             
+            foreach (int id in data.Hand)
+            {
+                hand.Add(board.Cards[id]);
+            }
+            foreach (int id  in data.Field)
+            {
+                if (id > 0)
+                    field.Add(board.Cards[id]);
+                else
+                    field.Add(null);
+            }
+            handDisplay.Display(hand);
+            fieldDisplay.Display(field.ToArray());
         }
     }
 }

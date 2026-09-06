@@ -6,11 +6,11 @@ namespace TCG.View
     {
         [SerializeField] SideDisplay[] sideDisplays;
         
-        public void Display(GameDisplayData gameDisplayData)
+        public void Display(BoardSnapshot boardSnapshot)
         {
             for (int i = 0; i < 2; i++)
             {
-                sideDisplays[i].Display(gameDisplayData.Sides[i]);
+                sideDisplays[i].Display(boardSnapshot.Sides[i], boardSnapshot);
             }   
         }   
     }

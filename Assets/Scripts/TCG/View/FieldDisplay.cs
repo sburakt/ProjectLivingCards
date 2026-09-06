@@ -11,7 +11,7 @@ namespace TCG.View
         private CardDisplay[] _occupants = new CardDisplay[6];
         private CardDisplay _cardPrefab;
         
-        public void Display(CardDisplayData[] data)
+        public void Display(CardSnapshot[] data)
         {
             ClearDisplay();
             for (int i = 0; i < 6; i++)

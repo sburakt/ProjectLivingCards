@@ -44,9 +44,9 @@ namespace TCG.View
             logs.text += "\n" +log;
         }
 
-        public void DisplayGameDisplay(GameDisplayData gameDisplayData)
+        public void DisplayGameDisplay(BoardSnapshot boardSnapshot)
         {
-            gameDisplay.Display(gameDisplayData);
+            gameDisplay.Display(boardSnapshot);
             //gameDisplayData.LegalMoves
         }
 

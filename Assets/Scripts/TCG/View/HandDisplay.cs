@@ -12,10 +12,10 @@ namespace TCG.View
         HashSet<int> _inHandIds = new HashSet<int>();
         private List<CardDisplay> _cardDisplays = new List<CardDisplay>();
         
-        public void Display(List<CardDisplayData> cards)
+        public void Display(List<CardSnapshot> cards)
         {
             ClearDisplay(cards); 
-            foreach (CardDisplayData cardDisplayData in cards)
+            foreach (CardSnapshot cardDisplayData in cards)
             {
                 if (_inHandIds.Add(cardDisplayData.InstanceId))
                 {
@@ -25,11 +25,11 @@ namespace TCG.View
         }
 
         //Clear all card in _cardDisplays that are not in the cards
-        public void ClearDisplay(List<CardDisplayData> cards)
+        public void ClearDisplay(List<CardSnapshot> cards)
         {
             foreach (CardDisplay cardDisplay in _cardDisplays)
             {
-                if (!_inHandIds.Contains(cardDisplay.CardDisplayData.InstanceId))
+                if (!_inHandIds.Contains(cardDisplay.CardSnapshot.InstanceId))
                 {
                     Destroy(cardDisplay.gameObject);
                 }
