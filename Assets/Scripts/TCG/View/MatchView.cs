@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TCG.Model.Core;
+using TCG.View.Events;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -15,12 +16,12 @@ namespace TCG.View
         [FormerlySerializedAs("_moveButtonContainer")] [SerializeField] private Transform moveButtonContainer;
         [FormerlySerializedAs("_buttonPrefab")] [SerializeField] private Button buttonPrefab;
         
+        [SerializeField] private ViewEventHandler _viewEventHandler;
         public Action<PlayerInput> OnInputSubmitted;
         private List<PlayerMove> _moves;
         private bool _isWaitingForInput = false;
         
-        
-        [SerializeField] private GameDisplay gameDisplay;
+        [FormerlySerializedAs("gameDisplay")] [SerializeField] private BoardView boardView;
         
         public void ShowState(string state)
         {
@@ -39,14 +40,14 @@ namespace TCG.View
             }
         }
     
-        public void AddLog(string log)
+        public void EnqueueNewEvent(ViewEvent ve)
         {
-            logs.text += "\n" +log;
+            _viewEventHandler.EnqueueEvent(ve);
         }
 
         public void DisplayGameDisplay(BoardSnapshot boardSnapshot)
         {
-            gameDisplay.Display(boardSnapshot);
+            //gameDisplay.Display(boardSnapshot);
             //gameDisplayData.LegalMoves
         }
 

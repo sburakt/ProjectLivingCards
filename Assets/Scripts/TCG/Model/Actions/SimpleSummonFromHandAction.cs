@@ -36,7 +36,7 @@ namespace TCG.Model.Actions
             CardEnterFieldAction cardEnterFieldAction = new CardEnterFieldAction(_cardId, _position.SideIndex, GroupId);
             match.PushAction(cardEnterFieldAction);
             //event
-            match.EnqueueEvent(new SimpleSummonEvent(_cardId,GroupId));
+            match.EnqueueEvent(new SimpleSummonedEvent(_cardId,_position,GroupId));
 
         }
     }

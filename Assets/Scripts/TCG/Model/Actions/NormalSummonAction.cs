@@ -46,7 +46,7 @@ namespace TCG.Model.Actions
                 match.PushAction(verticalPushAction);
             }
             // event
-            match.EnqueueEvent(new NormalSummonEvent(_cardId, GroupId));
+            match.EnqueueEvent(new NormalSummonedEvent(_cardId, _summonerSideIndex, _position, GroupId));
         }
     }
 }

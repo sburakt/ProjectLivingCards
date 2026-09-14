@@ -145,13 +145,16 @@ namespace TCG.Model.Events
         }
         
     }
-    public class NormalSummonEvent : MatchEvent
+    public class NormalSummonedEvent : MatchEvent
     {
+        public int SummoningSideIndex { get; private set; }
+        public Position SummonTargetPosition { get; private set; }
         public int SummonedCardId { get; private set; }
 
-        public NormalSummonEvent(int summonedCardId, int groupId)
+        public NormalSummonedEvent(int summonedCardId, int summoningSideIndex ,Position summonTargetPosition, int groupId)
         {
             SummonedCardId = summonedCardId;
+            SummonTargetPosition = summonTargetPosition;
             GroupId = groupId;
             IntroducedCardId = summonedCardId;
         }
@@ -170,13 +173,15 @@ namespace TCG.Model.Events
         
     }
 
-    public class SimpleSummonEvent : MatchEvent
+    public class SimpleSummonedEvent : MatchEvent
     {
         public int SummonedCardId { get; private set; }
+        public Position SummonedPosition { get; private set; }
 
-        public SimpleSummonEvent(int summonedCardId, int groupId)
+        public SimpleSummonedEvent(int summonedCardId, Position summonedPosition, int groupId)
         {
             SummonedCardId = summonedCardId;
+            SummonedPosition = summonedPosition;
             GroupId = groupId;
             IntroducedCardId = summonedCardId;
         }

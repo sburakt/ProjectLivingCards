@@ -41,14 +41,18 @@ namespace TCG.Presenter
                     eventSnapshots.Add(new EventSnapshot()
                     {
                         MatchEvent = e,
-                        CardSnapshot = new CardSnapshot(e.IntroducedCardId,_match)
+                        CardSnapshot = e.IntroducedCardId != 0? new CardSnapshot(e.IntroducedCardId,_match) : null
                     });
                 }
             } while (inputRequest is null);
-
-            List<List<EventSnapshot>> groups = GroupEventSnapshots(eventSnapshots);
-            
             // this part bellow runs when inputRequest is no longer null
+            List<List<EventSnapshot>> groups = GroupEventSnapshots(eventSnapshots);
+            Queue<ViewEvent> viewEvents = new Queue<ViewEvent>();
+            foreach (var group in groups)
+            {
+                ViewEvent ve = CreateViewEvent(group);
+                _view.EnqueueNewEvent(ve);
+            }
             _view.ShowOutput(inputRequest.DisplayMessage); 
             _view.ShowMoves(inputRequest.LegalMoves);
             _view.ShowState(_match.GetStringState());
@@ -62,6 +66,7 @@ namespace TCG.Presenter
             return primaryEvent switch
             {
                 DrawnEvent => new DrawEvent(group),
+                NormalSummonedEvent => new NormalSummonEvent(group),
                 _ => throw new NotImplementedException($"No ViewEvent mapping for {primaryEvent.GetType().Name}")
             };
         }

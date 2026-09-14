@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TCG.Model.Enums;
 using TCG.Model.Events;
 using TCG.Presenter;
 

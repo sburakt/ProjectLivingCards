@@ -1,36 +1,20 @@
 using System.Collections.Generic;
+using TCG.Model.Core;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace TCG.View
 {
     public class FieldDisplay : MonoBehaviour
     {
-        [SerializeField] CardDisplay cardDisplay;
         [SerializeField] Transform[] sloths;
-        
-        private CardDisplay[] _occupants = new CardDisplay[6];
-        private CardDisplay _cardPrefab;
-        
-        public void Display(CardSnapshot[] data)
-        {
-            ClearDisplay();
-            for (int i = 0; i < 6; i++)
-            {
-                if (data[i] != null)
-                {
-                    CardDisplay card = Instantiate(cardDisplay, sloths[i]);
-                    card.Display(data[i]);
-                }
-            }
-        }
+        [SerializeField] CellView[] cellViews;
 
-        public void ClearDisplay()
+
+        public CellView GetCell(Position position)
         {
-            foreach (Transform t in sloths)
-            {
-                if (t.childCount>0)
-                    Destroy(t.GetChild(0).gameObject);
-            }
+            int cellNumber = position.IsFront? (position.LaneIndex * 2) : (position.LaneIndex * 2) + 1;
+            return cellViews[cellNumber];
         }
     }
 }

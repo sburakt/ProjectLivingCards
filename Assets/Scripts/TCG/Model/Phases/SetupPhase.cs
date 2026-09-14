@@ -21,7 +21,7 @@ namespace TCG.Model.Phases
             {
                 match.PushAction(new DrawAction(1,groupId));
             }
-
+            groupId = match.ResolveGroupId(Match.UNASSIGNED_GROUP_ID);
             for (int i = 0; i < 4; i++)
             {
                 match.PushAction(new DrawAction(0,groupId));
