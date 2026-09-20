@@ -27,6 +27,8 @@ namespace TCG.Model.Core
         public Side ActiveSide => _sides[ActiveSideIndex];
         public Side OpponentSide => _sides[ActiveSideIndex ^ 1];
 
+        // abyss
+        public readonly Abyss Abyss = new Abyss();
         // phase variables
         private TurnPhase _currentPhase;
         private int _turnCount = 1;

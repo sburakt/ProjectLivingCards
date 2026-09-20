@@ -19,4 +19,14 @@
         Front,
         Back
     }
+    
+
+    public enum BattleType
+    {
+        AttackCard,
+        AttackSide,
+        NoBattle
+    }    
 }
+
+

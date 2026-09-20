@@ -1,5 +1,8 @@
-﻿namespace TCG.Model.Core
+﻿using System;
+
+namespace TCG.Model.Core
 {
+    [Serializable]
     public struct Position
     {
         public int  SideIndex;
@@ -16,5 +19,6 @@
             return "[" + SideIndex + "," + LaneIndex + IsFront + "]";
         }
         // adding is back confusing but i can miss !IsFront since I and ! blend together sometimes
+        
     }
 }

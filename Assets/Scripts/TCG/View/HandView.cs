@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 
 namespace TCG.View
 {
-    public class HandView : MonoBehaviour, ICardContainer
+    public class HandView : MonoBehaviour, ICardViewContainer
     {
         [Header("Hand Settings")] [SerializeField]
         private float cardSpacing = 1.2f;

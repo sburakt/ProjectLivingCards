@@ -34,19 +34,19 @@ namespace TCG.Model.Actions
             SimpleSummonFromHandAction simpleSummonFromHandAction = new SimpleSummonFromHandAction(_cardId, _position, GroupId);
             match.PushAction(simpleSummonFromHandAction);
 
+            VerticalPushDirection pushDirection;
+            if (_position.IsFront)
+                pushDirection = VerticalPushDirection.Back;
+            else
+                pushDirection = VerticalPushDirection.Front;
             if (cell.IsFull)
             {
-                VerticalPushDirection pushDirection;
-                if (_position.IsFront)
-                    pushDirection = VerticalPushDirection.Back;
-                else
-                    pushDirection = VerticalPushDirection.Front;
                 int toBePushedCardId = cell.Card.InstanceId;
                 VerticalPushAction verticalPushAction = new VerticalPushAction(_cardId, toBePushedCardId, pushDirection, GroupId);
                 match.PushAction(verticalPushAction);
             }
             // event
-            match.EnqueueEvent(new NormalSummonedEvent(_cardId, _summonerSideIndex, _position, GroupId));
+            match.EnqueueEvent(new NormalSummonedEvent(_cardId, _summonerSideIndex, _position, pushDirection ,GroupId));
         }
     }
 }

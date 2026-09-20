@@ -1,5 +1,7 @@
 ﻿using TCG.Model.Cards;
 using TCG.Model.Core;
+using TCG.Model.Enums;
+using TCG.Model.Events;
 
 namespace TCG.Model.Actions
 {
@@ -7,7 +9,6 @@ namespace TCG.Model.Actions
     {
         private readonly int _laneIndex;
         private readonly int _attackerSideIndex;
-        
 
         public StandardLaneBattleAction(int laneIndex, int attackerSideIndex, int groupId)
         {
@@ -29,23 +30,27 @@ namespace TCG.Model.Actions
             
             // fizzle check
             if (attackerFrontCell.IsEmpty)
+            {
+                match.EnqueueEvent(new StandardLaneBattledEvent( _laneIndex, _attackerSideIndex, BattleType.NoBattle, GroupId));
                 return;
+            }
 
             RuntimeCard attacker = attackerFrontCell.Card;
             
             if (defenderLane.IsEmpty)
             {
                 match.PushAction(new AttackSideAction(attacker.InstanceId, _attackerSideIndex^1, GroupId));
+                match.EnqueueEvent(new StandardLaneBattledEvent( _laneIndex, _attackerSideIndex, BattleType.AttackSide ,GroupId));
             }
             else
             {
                 
                 RuntimeCard defenderCard = defenderLane.FrontCell.IsFull? defenderLane.FrontCell.Card : defenderLane.BackCell.Card;
-                match.PushAction(
-                    new AttackCardAction(attacker.InstanceId, defenderCard.InstanceId, GroupId)
-                    );
+                match.PushAction(new AttackCardAction(attacker.InstanceId, defenderCard.InstanceId, GroupId));
+                match.EnqueueEvent(new StandardLaneBattledEvent( _laneIndex, _attackerSideIndex, BattleType.AttackCard ,GroupId));
                 
-            }  
+            }
+            
         }
         
     }

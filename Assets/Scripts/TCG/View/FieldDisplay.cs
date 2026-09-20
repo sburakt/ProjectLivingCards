@@ -7,7 +7,6 @@ namespace TCG.View
 {
     public class FieldDisplay : MonoBehaviour
     {
-        [SerializeField] Transform[] sloths;
         [SerializeField] CellView[] cellViews;
 
 

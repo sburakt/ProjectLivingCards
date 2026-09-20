@@ -15,15 +15,15 @@ namespace TCG.View
         [SerializeField] private TextMeshPro baseHealth;
         
         public CardSnapshot CardSnapshot;
-        public ICardContainer CurrentContainer;
+        public ICardViewContainer CurrentViewContainer;
         
-        public void MoveTo(ICardContainer newContainer)
+        public void MoveTo(ICardViewContainer newViewContainer)
         {
-            CurrentContainer?.RemoveCard(this);
+            CurrentViewContainer?.RemoveCard(this);
 
-            newContainer.AddCard(this);
+            newViewContainer.AddCard(this);
 
-            CurrentContainer = newContainer;
+            CurrentViewContainer = newViewContainer;
         }
         
 
@@ -38,11 +38,5 @@ namespace TCG.View
             health.text = data.CurrentHealth.ToString();
             baseHealth.text = data.BaseHealth.ToString();
         }
-    }
-
-    public interface ICardContainer
-    {
-        public void AddCard(CardView cardView);
-        public void RemoveCard(CardView cardView);
     }
 }

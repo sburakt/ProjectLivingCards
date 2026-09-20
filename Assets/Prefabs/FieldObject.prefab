@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1926532888652584059}
   - component: {fileID: 5219573351322582827}
   m_Layer: 0
-  m_Name: sloth (5)
+  m_Name: cell4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 820dc0ceb96f49b7bd2157888569f1b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardView: {fileID: 0}
+  Position:
+    SideIndex: 0
+    LaneIndex: 2
+    IsFront: 1
   occupied: 0
 --- !u!1 &1145668182175241156
 GameObject:
@@ -140,7 +143,7 @@ GameObject:
   - component: {fileID: 4793662836669773470}
   - component: {fileID: 1603228822487093990}
   m_Layer: 0
-  m_Name: sloth (4)
+  m_Name: cell3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -173,7 +176,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 820dc0ceb96f49b7bd2157888569f1b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardView: {fileID: 0}
+  Position:
+    SideIndex: 0
+    LaneIndex: 1
+    IsFront: 0
   occupied: 0
 --- !u!1 &5863475985861785104
 GameObject:
@@ -186,7 +192,7 @@ GameObject:
   - component: {fileID: 2320663545806725165}
   - component: {fileID: 5941967485678953263}
   m_Layer: 0
-  m_Name: sloth (6)
+  m_Name: cell5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -219,7 +225,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 820dc0ceb96f49b7bd2157888569f1b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardView: {fileID: 0}
+  Position:
+    SideIndex: 0
+    LaneIndex: 2
+    IsFront: 0
   occupied: 0
 --- !u!1 &6044313527451895616
 GameObject:
@@ -232,7 +241,7 @@ GameObject:
   - component: {fileID: 5801442959306397760}
   - component: {fileID: 8285456088588385710}
   m_Layer: 0
-  m_Name: sloth (3)
+  m_Name: cell2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -265,7 +274,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 820dc0ceb96f49b7bd2157888569f1b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardView: {fileID: 0}
+  Position:
+    SideIndex: 0
+    LaneIndex: 1
+    IsFront: 1
   occupied: 0
 --- !u!1 &6357721671736703236
 GameObject:
@@ -278,7 +290,7 @@ GameObject:
   - component: {fileID: 5621213759844025615}
   - component: {fileID: 2538979532226023441}
   m_Layer: 0
-  m_Name: sloth (1)
+  m_Name: cell0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -311,7 +323,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 820dc0ceb96f49b7bd2157888569f1b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardView: {fileID: 0}
+  Position:
+    SideIndex: 0
+    LaneIndex: 0
+    IsFront: 1
   occupied: 0
 --- !u!1 &8240781428592488710
 GameObject:
@@ -389,7 +404,7 @@ GameObject:
   - component: {fileID: 8670713106130878876}
   - component: {fileID: 7968194191134004653}
   m_Layer: 0
-  m_Name: sloth (2)
+  m_Name: cell1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -422,5 +437,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 820dc0ceb96f49b7bd2157888569f1b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardView: {fileID: 0}
+  Position:
+    SideIndex: 0
+    LaneIndex: 0
+    IsFront: 0
   occupied: 0

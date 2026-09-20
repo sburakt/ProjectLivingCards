@@ -1,10 +1,15 @@
-﻿using UnityEngine;
+﻿using TCG.Model.Core;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace TCG.View
 {
-    public class CellView: MonoBehaviour, ICardContainer
+    public class CellView: MonoBehaviour, ICardViewContainer
     {
+        [FormerlySerializedAs("Position")] [SerializeField] private Position position;
+        public Position Position => position;
         public CardView CardView { get; private set; }
+        
         public bool occupied = false;
 
         public void AddCard(CardView cardView)

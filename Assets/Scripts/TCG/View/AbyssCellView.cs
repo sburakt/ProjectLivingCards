@@ -2,7 +2,7 @@
 
 namespace TCG.View
 {
-    public class AbyssCellView : MonoBehaviour, ICardContainer
+    public class AbyssCellView : MonoBehaviour, ICardViewContainer
     {
         public CardView CardView { get; private set; }
         public bool occupied = false;

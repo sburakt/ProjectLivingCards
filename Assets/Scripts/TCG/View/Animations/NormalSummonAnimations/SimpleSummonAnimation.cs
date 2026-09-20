@@ -17,18 +17,20 @@ namespace TCG.View.Animations
         [SerializeField] private CardViewRegistry cardViewRegistry;
         [SerializeField] private BoardView boardManager;
 
-        public void Play(SimpleSummonEvent summonEvent, Action onComplete)
+        public void Play(SimpleSummonEvent damageSideEvent, Action onComplete)
         {
-            StartCoroutine(PlaySimpleSummon(summonEvent, onComplete));
+            StartCoroutine(PlaySimpleSummon(damageSideEvent, onComplete));
             
         }
 
         private IEnumerator PlaySimpleSummon(SimpleSummonEvent summonEvent, Action onComplete)
         {
             FieldDisplay summonedField = boardManager.sideViews[summonEvent.SummoningSideIndex].fieldDisplay;
+            HandView handView = boardManager.sideViews[summonEvent.SummoningSideIndex].handView;
             CellView summonedCell = summonedField.GetCell(summonEvent.SummonedPosition);
             CardView summonedCard = cardViewRegistry.GetCard(summonEvent.SummonedCardId);
-            summonedCell.AddCard(summonedCard);
+            summonedCard.MoveTo(summonedCell);
+            handView.FanOut();
             yield return DOTween.Sequence()
                 .Join(summonedCard.transform.DOLocalMove(Vector3.zero, summonDuration))
                 .Join(summonedCard.transform.DOLocalRotateQuaternion(Quaternion.identity, turnCardDuration))

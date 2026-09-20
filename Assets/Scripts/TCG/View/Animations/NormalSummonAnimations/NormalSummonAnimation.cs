@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using TCG.View.Animations.DestroyAnimations;
 using TCG.View.Events;
 using UnityEngine;
 
@@ -9,29 +10,33 @@ namespace TCG.View.Animations
     {
         [SerializeField] private SimpleSummonAnimation summonAnimation;
         [SerializeField] private PushMoveAnimation pushMoveAnimation;
-        //[SerializeField] private  pushMoveAnomation;
-        //...
+        [SerializeField] private PushAbyssAnimation pushAbyssAnimation;
+        [SerializeField] private DestroyAnimation destroyAnimation;
 
 
-        public void Play(NormalSummonEvent summonEvent, Action onComplete)
+        public void Play(NormalSummonEvent damageSideEvent, Action onComplete)
         {
-            StartCoroutine(PlayNormalSummon(summonEvent, onComplete));
-            
+            StartCoroutine(PlayNormalSummon(damageSideEvent, onComplete));
         }
 
         private IEnumerator PlayNormalSummon(NormalSummonEvent summonEvent, Action onComplete)
         {
-            bool currentAnimationComplete = false;
-            foreach (PushMoveEvent pushMoveEvent in summonEvent.PushedEvents)
+            int pushCount = 0; 
+            if (summonEvent.PushAbyssEvent != null)
             {
-                pushMoveAnimation.Play(pushMoveEvent, ()=> currentAnimationComplete = true);
-                yield return new WaitUntil(() => currentAnimationComplete);
-                currentAnimationComplete = false;
+                pushCount++;
+                pushAbyssAnimation.Play(summonEvent.PushAbyssEvent, () =>  pushCount -- );
+                yield return new WaitForSeconds(0.1f);
             }
-            summonAnimation.Play(summonEvent.SimpleSummonEvent, ()=> currentAnimationComplete = true);
-            yield return new WaitUntil(() => currentAnimationComplete);
-            currentAnimationComplete = false;
-            onComplete?.Invoke();
+            if (summonEvent.PushMoveEvent != null)
+            {
+                pushCount++;
+                pushMoveAnimation.Play(summonEvent.PushMoveEvent , ()=> pushCount --);
+            }
+            summonAnimation.Play(summonEvent.SimpleSummonEvent, onComplete);
+            yield return new WaitUntil(() => pushCount == 0);
+            if(summonEvent.DestroyEvent != null)
+                destroyAnimation.Play(summonEvent.DestroyEvent, () => {});
         }
     }
 }

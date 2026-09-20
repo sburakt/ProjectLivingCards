@@ -19,9 +19,9 @@ namespace TCG.View.Animations
         [SerializeField] private CardViewRegistry cardViewRegistry;
         [SerializeField] private BoardView boardManager;
         
-        public void Play(DrawEvent drawEvent, Action onComplete)
+        public void Play(DrawEvent damageSideEvent, Action onComplete)
         {
-            StartCoroutine(PlayDraw(drawEvent, onComplete));
+            StartCoroutine(PlayDraw(damageSideEvent, onComplete));
         }
 
         private IEnumerator PlayDraw(DrawEvent drawEvent, Action onComplete)
@@ -39,7 +39,7 @@ namespace TCG.View.Animations
 
         private IEnumerator DrawToHand(CardView cardView, HandView handView)
         {
-            handView.AddCard(cardView);
+            cardView.MoveTo(handView);
             PosRot posRot = handView.GetPosRot(cardView);
             handView.FanOut();
             yield return DOTween.Sequence()

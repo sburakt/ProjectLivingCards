@@ -67,6 +67,7 @@ namespace TCG.Presenter
             {
                 DrawnEvent => new DrawEvent(group),
                 NormalSummonedEvent => new NormalSummonEvent(group),
+                StandardLaneBattledEvent => new View.Events.StandardLaneBattleEvent(group),
                 _ => throw new NotImplementedException($"No ViewEvent mapping for {primaryEvent.GetType().Name}")
             };
         }

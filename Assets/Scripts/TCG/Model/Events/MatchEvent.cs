@@ -147,16 +147,20 @@ namespace TCG.Model.Events
     }
     public class NormalSummonedEvent : MatchEvent
     {
+        public int SummonedCardId { get; private set; }
         public int SummoningSideIndex { get; private set; }
         public Position SummonTargetPosition { get; private set; }
-        public int SummonedCardId { get; private set; }
+        
+        public VerticalPushDirection Direction { get; private set; }
 
-        public NormalSummonedEvent(int summonedCardId, int summoningSideIndex ,Position summonTargetPosition, int groupId)
+        public NormalSummonedEvent(int summonedCardId, int summoningSideIndex ,Position summonTargetPosition, VerticalPushDirection direction, int groupId)
         {
             SummonedCardId = summonedCardId;
+            SummoningSideIndex = summoningSideIndex;
             SummonTargetPosition = summonTargetPosition;
             GroupId = groupId;
             IntroducedCardId = summonedCardId;
+            Direction = direction;
         }
     }
     
@@ -187,15 +191,19 @@ namespace TCG.Model.Events
         }
     }
 
-    public class StandardLaneBattleEvent : MatchEvent
+    public class StandardLaneBattledEvent : MatchEvent
     {
         public int LaneIndex { get; private set; }
-        public int AttackerSineIndex { get; private set; }
+        public int AttackerSideIndex { get; private set; }
+        
+        public BattleType BattleType { get; private set; }
 
-        public StandardLaneBattleEvent(int laneIndex, int attackerSineIndex, int groupId)
+
+        public StandardLaneBattledEvent(int laneIndex, int attackerSideIndex, BattleType battleType ,int groupId)
         {
             LaneIndex = laneIndex;
-            AttackerSineIndex = attackerSineIndex;
+            AttackerSideIndex = attackerSideIndex;
+            BattleType = battleType;
             GroupId = groupId;
         }
     }

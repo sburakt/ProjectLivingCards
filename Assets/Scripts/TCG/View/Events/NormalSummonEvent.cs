@@ -9,9 +9,11 @@ namespace TCG.View.Events
     public class NormalSummonEvent : ViewEvent
     {
         private readonly int _summoningSideIndex;
+        
+        private VerticalPushDirection _verticalPushDirection;
         public SimpleSummonEvent SimpleSummonEvent { get; private set; }
         public PushAbyssEvent PushAbyssEvent { get; private set; }
-        public readonly List<PushMoveEvent> PushedEvents = new List<PushMoveEvent>();
+        public PushMoveEvent PushMoveEvent { get; private set; }
         public DestroyEvent DestroyEvent { get; private set; }
 
         public NormalSummonEvent(List<EventSnapshot> group)
@@ -19,6 +21,7 @@ namespace TCG.View.Events
             if (group[0].MatchEvent is NormalSummonedEvent normalSummonedEvent)
             {
                 _summoningSideIndex = normalSummonedEvent.SummoningSideIndex;
+                _verticalPushDirection = normalSummonedEvent.Direction;
             }
             foreach (EventSnapshot eventSs in group)
             {
@@ -27,14 +30,15 @@ namespace TCG.View.Events
                 {
                     Debug.Log($"Moved Event ,{movedEvent.MovedCardId} , {movedEvent.NewPosition.ToString()}");
                     PushMoveEvent moveEvent = new PushMoveEvent(movedEvent);
-                    PushedEvents.Add(moveEvent);
+                    PushMoveEvent = moveEvent;
                 }
 
                 else if (eventSs.MatchEvent is DestroyedEvent destroyedEvent)
                 {
                     if (destroyedEvent.DestroyCause != DestroyCause.Push)
                         continue;
-                    PushAbyssEvent = new PushAbyssEvent(_summoningSideIndex, destroyedEvent.DestroyedId);
+                    // always pushing back rn
+                    PushAbyssEvent = new PushAbyssEvent(_summoningSideIndex, destroyedEvent.DestroyedId, _verticalPushDirection);
                     Debug.Log($"Destroyed Event ,{destroyedEvent.DestroyedId} , {destroyedEvent.DestroyerId}");
                     DestroyEvent  = new DestroyEvent(destroyedEvent);
                 }

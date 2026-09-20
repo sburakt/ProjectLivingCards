@@ -15,9 +15,9 @@ namespace TCG.View.Animations
         [SerializeField] private CardViewRegistry cardViewRegistry;
         [SerializeField] private BoardView boardManager;
 
-        public void Play(PushMoveEvent pushMoveEvent, Action onComplete)
+        public void Play(PushMoveEvent damageSideEvent, Action onComplete)
         {
-            StartCoroutine(PlayPushMove(pushMoveEvent, onComplete));
+            StartCoroutine(PlayPushMove(damageSideEvent, onComplete));
         }
 
         private IEnumerator PlayPushMove(PushMoveEvent pushMoveEvent, Action onComplete)

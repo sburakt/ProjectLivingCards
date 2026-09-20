@@ -35,6 +35,7 @@ namespace TCG.Model.Phases
             switch (currentBattleStep)
             {
                 case BattleSteps.PreBattle:
+                    // todo enter battle phase event
                     Debug.Log("Battle Phase PreBattle");
                     match.CurrentPhaseStep = (int)BattleSteps.Lane0;
                     break;

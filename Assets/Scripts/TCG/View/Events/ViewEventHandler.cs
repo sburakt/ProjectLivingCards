@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TCG.View.Events;
 using TCG.View.Animations;
+using TCG.View.Animations.BattleAnimations;
 using UnityEngine;
 
 namespace TCG.View.Events
@@ -9,6 +10,7 @@ namespace TCG.View.Events
     {
         public DrawAnimation drawAnimation;
         public NormalSummonAnimation normalSummonAnimation;
+        public StandardLaneBattleAnimation standardLaneBattleAnimation;
         private bool _processing = false;
         private readonly Queue<ViewEvent> _viewEvents = new Queue<ViewEvent>();
 
@@ -29,6 +31,9 @@ namespace TCG.View.Events
                     break;
                 case NormalSummonEvent summonEvent:
                     normalSummonAnimation.Play(summonEvent, OnAnimationComplete);
+                    break;
+                case StandardLaneBattleEvent standardLaneBattleEvent:
+                    standardLaneBattleAnimation.Play(standardLaneBattleEvent, OnAnimationComplete);
                     break;
             }
         }
