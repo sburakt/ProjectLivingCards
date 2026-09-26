@@ -235,6 +235,11 @@ namespace TCG.Model.Core
             return state;
         }
 
+        public BoardSnapshot GetSnapshot()
+        {
+            return new BoardSnapshot(this);
+        }
+
         // might be improved or moved out of match class
 
         public int ResolveGroupId(int number)

@@ -25,6 +25,7 @@ namespace TCG.Presenter
         public void StartMatch()
         {
             _match.InitializeMatch();
+            _view.Sync(_match.GetSnapshot());
             ContinueMatch();
         }
 
@@ -67,7 +68,7 @@ namespace TCG.Presenter
             {
                 DrawnEvent => new DrawEvent(group),
                 NormalSummonedEvent => new NormalSummonEvent(group),
-                StandardLaneBattledEvent => new View.Events.StandardLaneBattleEvent(group),
+                StandardLaneBattledEvent => new StandardLaneBattleEvent(group),
                 _ => throw new NotImplementedException($"No ViewEvent mapping for {primaryEvent.GetType().Name}")
             };
         }

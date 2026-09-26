@@ -16,13 +16,12 @@ namespace TCG.View
         [FormerlySerializedAs("_moveButtonContainer")] [SerializeField] private Transform moveButtonContainer;
         [FormerlySerializedAs("_buttonPrefab")] [SerializeField] private Button buttonPrefab;
         
-        [SerializeField] private ViewEventHandler _viewEventHandler;
+        [SerializeField] private ViewEventHandler viewEventHandler;
+        [SerializeField] private BoardView boardView;
         public Action<PlayerInput> OnInputSubmitted;
         private List<PlayerMove> _moves;
         private bool _isWaitingForInput = false;
-        
-        [FormerlySerializedAs("gameDisplay")] [SerializeField] private BoardView boardView;
-        
+                
         public void ShowState(string state)
         {
             stateText.text = state;
@@ -42,7 +41,7 @@ namespace TCG.View
     
         public void EnqueueNewEvent(ViewEvent ve)
         {
-            _viewEventHandler.EnqueueEvent(ve);
+            viewEventHandler.EnqueueEvent(ve);
         }
 
         public void DisplayGameDisplay(BoardSnapshot boardSnapshot)
@@ -55,6 +54,12 @@ namespace TCG.View
         {
             text.text = output;
             _isWaitingForInput = true;
+        }
+
+        public void Sync(BoardSnapshot boardSnapshot)
+        {
+            boardView.sideViews[0].SetLP(boardSnapshot.Sides[0].LifePoints);
+            boardView.sideViews[1].SetLP(boardSnapshot.Sides[0].LifePoints);
         }
 
         private void SendInput(PlayerInput input)

@@ -8,6 +8,7 @@ namespace TCG.View.Animations.BattleAnimations
 {
     public class DamageSideAnimation : MonoBehaviour, IAnimation<DamageSideEvent>
     {
+        [SerializeField] private BoardView boardView;
         [SerializeField] private Transform[] sideTransforms;
         [SerializeField] private TMP_Text damageTextPrefab;
 
@@ -29,6 +30,8 @@ namespace TCG.View.Animations.BattleAnimations
                 startPosition + Vector3.up * moveDistance;
 
             textTransform.localScale = Vector3.zero;
+
+            boardView.sideViews[damageSideEvent.DamageSideIndex].DecreaseLP(damageSideEvent.Amount);
 
             Sequence sequence = DOTween.Sequence();
 

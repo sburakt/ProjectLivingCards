@@ -16,6 +16,7 @@ namespace TCG.View.Animations.BattleAnimations
 
         
         [Header("Dependencies")]
+        [SerializeField] private BoardView boardView;
         [SerializeField] private AttackCardAnimation attackCardAnimation;
         [SerializeField] private AttackSideAnimation attackSideAnimation;
         [SerializeField] private DestroyAnimation destroyAnimation;
@@ -30,18 +31,27 @@ namespace TCG.View.Animations.BattleAnimations
         private IEnumerator PlayStandardLaneBattleAnimation(StandardLaneBattleEvent battleEvent, Action onComplete)
         {
             bool attackDone = false;
+            Action onImpact;
             switch (battleEvent.BattleType)
             {
                 case BattleType.AttackSide:
+                    if (battleEvent.DamageSideEvent != null)
+                        onImpact = () => damageSideAnimation.Play(battleEvent.DamageSideEvent, onComplete: () => {});
+                    else
+                        onImpact =() => {};
                     attackSideAnimation.Play(
                         battleEvent.AttackSideEvent,
-                        onImpact:() => damageSideAnimation.Play(battleEvent.DamageSideEvent, onComplete: () => { }),
+                        onImpact: onImpact,
                         onComplete: () => attackDone = true);
                     break;
                 case BattleType.AttackCard:
+                    if (battleEvent.DamageCardEvent != null)
+                        onImpact = () => damageCardAnimation.Play(battleEvent.DamageCardEvent, onComplete: () => { });
+                    else
+                        onImpact =() => { };
                     attackCardAnimation.Play(
                         battleEvent.AttackCardEvent,
-                        onImpact:() => damageCardAnimation.Play(battleEvent.DamageCardEvent,onComplete: () => {}),
+                        onImpact: onImpact,
                         onComplete: () => attackDone = true);
                     break;
                 case BattleType.NoBattle:

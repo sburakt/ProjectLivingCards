@@ -89,7 +89,7 @@ namespace TCG
         public SideSnapshot[] Sides;
         public int ActiveSideIndex;
         public List<BuffSnapshot> Buffs;
-        public Dictionary<int, CardSnapshot> Cards;
+        //public Dictionary<int, CardSnapshot> Cards;
 
         public BoardSnapshot(Match match)
         {
@@ -100,14 +100,14 @@ namespace TCG
             };
             ActiveSideIndex = match.ActiveSideIndex;
             Buffs = new List<BuffSnapshot>();
-            Cards = new Dictionary<int, CardSnapshot>();
-            for (int i = 0; i < 2; i++)
-            {
-                foreach (int id in Sides[i].GetCardIds())
-                {
-                    Cards[id] = new CardSnapshot(match.FindRuntimeCardById(id), match);
-                }
-            }
+            // Cards = new Dictionary<int, CardSnapshot>();
+            // for (int i = 0; i < 2; i++)
+            // {
+            //     foreach (int id in Sides[i].GetCardIds())
+            //     {
+            //         Cards[id] = new CardSnapshot(match.FindRuntimeCardById(id), match);
+            //     }
+            // }
             foreach (Effect effect in match.EffectList)
             {
                 if (effect is IBuff buff)
@@ -121,22 +121,21 @@ namespace TCG
                     });
                 }
             }
-            //AddBuffs(match);
         }
 
-        private void AddBuffs(Match match)
-        {
-            foreach (Effect effect in match.EffectList)
-            {
-                if (effect is IBuff buff)
-                {
-                    Cards[buff.SourceInstanceId].Buffs.Add(new BuffSnapshot()
-                    {
-                        BuffId = buff.BuffId,
-                        StackCount = buff.Stack
-                    });
-                }
-            }
-        }
+        // private void AddBuffs(Match match)
+        // {
+        //     foreach (Effect effect in match.EffectList)
+        //     {
+        //         if (effect is IBuff buff)
+        //         {
+        //             Cards[buff.SourceInstanceId].Buffs.Add(new BuffSnapshot()
+        //             {
+        //                 BuffId = buff.BuffId,
+        //                 StackCount = buff.Stack
+        //             });
+        //         }
+        //     }
+        // }
     }
 }
